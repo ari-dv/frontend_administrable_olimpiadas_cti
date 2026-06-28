@@ -1,0 +1,72 @@
+.page-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+  .header-titles {
+    h1 { margin: 0; color: #1e293b; font-size: 1.8rem; }
+    p { margin: 5px 0 0 0; color: #64748b; font-size: 0.95rem; }
+  }
+  ::ng-deep .btn-nuevo { background-color: #0ea5e9; border: none; border-radius: 6px; padding: 0.6rem 1.2rem; &:hover { background-color: #0284c7; } }
+}
+
+.card-tabla {
+  background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;
+  .tabla-toolbar {
+    padding: 16px 20px; border-bottom: 1px solid #f1f5f9;
+    .input-buscar { width: 100%; max-width: 400px; border-radius: 6px; }
+  }
+  ::ng-deep {
+    /* Agregado white-space: nowrap para el scroll */
+    .p-datatable .p-datatable-thead > tr > th { background-color: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; padding: 1rem 1.5rem; white-space: nowrap; }
+    .p-datatable .p-datatable-tbody > tr > td { padding: 1rem 1.5rem; color: #334155; border-bottom: 1px solid #f1f5f9; }
+    .col-acciones { text-align: right; .p-button { width: 2.5rem; height: 2.5rem; color: #94a3b8; &:hover { color: #1e293b; background: #f1f5f9; } } }
+  }
+}
+
+::ng-deep {
+  .p-dialog-header { border-bottom: 1px solid #f1f5f9; h2, .p-dialog-title { font-weight: 600; color: #1e293b; } }
+  
+  .form-modal {
+    padding-top: 15px; 
+    /* overflow-x: hidden; <-- Puedes quitar esto, no es necesario */
+    
+    .campo {
+      margin-bottom: 20px; 
+      width: 100%;
+      label { display: block; margin-bottom: 8px; color: #334155; font-weight: 500; font-size: 0.95rem; }
+      .p-inputtext { width: 100%; }
+      .error-text { color: #ef4444; font-size: 0.8rem; margin-top: 5px; display: block; font-weight: 500; }
+    }
+    
+    .fila-doble { 
+      display: flex; gap: 15px; width: 100%; 
+      /* Quitamos el margin: 0 para que recupere su separación inferior */
+      .campo { flex: 1; min-width: 0; } 
+    }
+
+    /* Evita que el último input genere un espacio extra que active el scroll */
+    .campo:last-child {
+      margin-bottom: 5px; 
+    }
+  }
+  
+  .btn-guardar { background-color: #0284c7; border: none; &:hover { background-color: #0369a1; } &:disabled { opacity: 0.6; } }
+}
+
+/* =========================================
+   RESPONSIVE (MEDIA QUERIES)
+   ========================================= */
+@media (max-width: 768px) {
+  /* Cabecera apilada */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+
+    ::ng-deep .btn-nuevo { width: 100%; }
+  }
+
+  /* Filas dobles del modal a una sola columna */
+  ::ng-deep .form-modal .fila-doble {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

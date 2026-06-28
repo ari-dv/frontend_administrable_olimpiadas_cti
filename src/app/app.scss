@@ -1,0 +1,189 @@
+.layout-wrapper {
+  display: flex;
+  height: 100vh;
+  background-color: #f4f6f9;
+  overflow: hidden;
+
+  /* LÓGICA DE COLAPSADO PARA ESCRITORIO (MINI SIDEBAR) */
+  &.menu-collapsed {
+    .sidebar {
+      width: 80px;
+      min-width: 80px;
+
+      .text { display: none; }
+      .menu-title { display: none; }
+
+      .logo {
+        padding: 20px 0;
+        justify-content: center;
+      }
+
+      .submenu-item {
+        padding: 15px 0;
+        justify-content: center;
+        
+        i { font-size: 1.3rem; margin: 0; }
+      }
+    }
+  }
+  
+  /* SIDEBAR NORMAL */
+  .sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: white;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    overflow: hidden;
+    
+    .logo {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      border-bottom: 1px solid #f1f5f9;
+      
+      .logo-icon {
+        background: #0ea5e9;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 4px;
+      }
+    }
+    
+    .menu {
+      padding: 15px 10px;
+      
+      .menu-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+      
+      .submenu-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        color: #64748b;
+        text-decoration: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        margin-bottom: 5px;
+        
+        &:hover { 
+          color: #0ea5e9; 
+          background: #f8fafc; 
+        }
+        
+        &.active {
+          background: #f0fdfa;
+          color: #0d9488;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+  
+  /* MAIN CONTENT */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    
+    .topbar {
+      height: 64px;
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      
+      .btn-menu { 
+        color: #64748b; 
+        cursor: pointer; 
+        font-size: 1.2rem; 
+      }
+      
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        
+        .date-badge {
+          background: #f1f5f9;
+          padding: 8px 16px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          color: #475569;
+          font-weight: 500;
+          text-transform: capitalize;
+        }
+        
+        .icon-bell { color: #64748b; cursor: pointer; font-size: 1.2rem; }
+      }
+    }
+    
+    .content-area {
+      padding: 24px;
+      overflow-y: auto;
+      height: calc(100vh - 64px);
+    }
+  }
+
+  /* MEDIA QUERIES PARA MÓVILES */
+  @media (max-width: 768px) {
+    .sidebar {
+      position: absolute;
+      height: 100%;
+      margin-left: -260px; /* Oculto por defecto en móvil */
+      box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    }
+
+    /* En móvil, la clase menu-collapsed despliega el menú completo, no el mini sidebar */
+    &.menu-collapsed {
+      .sidebar {
+        width: 260px;
+        min-width: 260px;
+        margin-left: 0; 
+        
+        /* Restauramos los textos */
+        .text { display: block; }
+        .menu-title { display: flex; }
+        
+        .logo {
+          padding: 20px;
+          justify-content: flex-start;
+        }
+
+        .submenu-item {
+          padding: 12px 20px;
+          justify-content: flex-start;
+          
+          i { font-size: 1rem; margin-right: 0; }
+        }
+      }
+    }
+
+    .topbar {
+      padding: 0 15px !important;
+      
+      .date-badge {
+        display: none;
+      }
+    }
+  }
+}

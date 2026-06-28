@@ -1,0 +1,633 @@
+// ═══════════════════════════════════════════════════════════════════
+//  VARIABLES
+// ═══════════════════════════════════════════════════════════════════
+$azul:       #0284c7;
+$azul-dark:  #0369a1;
+$azul-light: #e0f2fe;
+$slate-900:  #0f172a;
+$slate-700:  #334155;
+$slate-500:  #64748b;
+$slate-300:  #cbd5e1;
+$slate-200:  #e2e8f0;
+$slate-100:  #f1f5f9;
+$slate-50:   #f8fafc;
+$verde:      #059669;
+$verde-bg:   #f0fdf4;
+$rojo:       #dc2626;
+$rojo-bg:    #fef2f2;
+$rojo-borde: #fca5a5;
+$amber:      #d97706;
+$amber-bg:   #fffbeb;
+$amber-borde:#fde68a;
+$white:      #ffffff;
+$radius-sm:  8px;
+$radius-md:  12px;
+$radius-lg:  16px;
+$shadow-sm:  0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+$shadow-md:  0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -1px rgba(0,0,0,.04);
+
+// ═══════════════════════════════════════════════════════════════════
+//  FIX: PrimeNG p-select — truncar texto largo dentro del campo
+// ═══════════════════════════════════════════════════════════════════
+p-select .p-select,
+p-select.w-full .p-select {
+  width: 100%;
+  min-width: 0;
+}
+
+p-select .p-select-label {
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+  min-width:     0;
+  flex:          1;
+  display:       block;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  CABECERA
+// ═══════════════════════════════════════════════════════════════════
+.header-matricula {
+  display:        flex;
+  align-items:    center;
+  gap:            12px;
+  margin-bottom:  24px;
+  padding-bottom: 16px;
+  border-bottom:  1px solid $slate-100;
+
+  h2 {
+    margin:      0;
+    font-size:   1.35rem;
+    font-weight: 700;
+    color:       $slate-900;
+    line-height: 1.2;
+  }
+
+  p {
+    margin:    4px 0 0;
+    font-size: .85rem;
+    color:     $slate-500;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  ALERTS GLOBALES Y ESTADOS
+// ═══════════════════════════════════════════════════════════════════
+.alert-error {
+  display:       flex;
+  align-items:   center;
+  gap:           10px;
+  background:    $rojo-bg;
+  border:        1px solid $rojo-borde;
+  border-radius: $radius-md;
+  padding:       12px 16px;
+  margin-bottom: 20px;
+  font-size:     .875rem;
+  color:         $rojo;
+}
+
+.estado-cargando {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             12px;
+  padding:         48px;
+  color:           $slate-500;
+  font-size:       .95rem;
+
+  i { font-size: 1.5rem; color: $azul; }
+}
+
+.estado-vacio {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  padding:        36px 20px;
+  text-align:     center;
+  border:         2px dashed $slate-200;
+  border-radius:  $radius-lg;
+  color:          $slate-500;
+
+  i { font-size: 2rem; margin-bottom: 10px; color: $slate-300; }
+  p { margin: 0; font-size: .9rem; }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  GRID DE 3 PASOS
+// ═══════════════════════════════════════════════════════════════════
+.pasos-grid {
+  display:               grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); // minmax(0) evita desborde
+  gap:                   16px;
+  align-items:           start;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 560px) { grid-template-columns: 1fr; }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  TARJETA DE PASO
+// ═══════════════════════════════════════════════════════════════════
+.card-paso {
+  background:    $white;
+  border:        1.5px solid $slate-200;
+  border-radius: $radius-lg;
+  padding:       20px;
+  box-shadow:    $shadow-sm;
+  transition:    border-color .2s, box-shadow .2s;
+  min-width:     0; // previene desborde en grid
+
+  &.paso-activo {
+    border-color: $azul;
+    box-shadow:   0 0 0 3px rgba($azul, .07), $shadow-md;
+  }
+}
+
+.paso-header {
+  display:       flex;
+  align-items:   center;
+  gap:           10px;
+  margin-bottom: 16px;
+
+  h3 {
+    margin:      0;
+    font-size:   .9rem;
+    font-weight: 700;
+    color:       $slate-500;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+}
+
+.paso-numero {
+  width:           26px;
+  height:          26px;
+  border-radius:   50%;
+  background:      $azul-light;
+  color:           $azul-dark;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       .8rem;
+  font-weight:     800;
+  flex-shrink:     0;
+  transition:      all .2s;
+
+  &.completado {
+    background: $azul;
+    color:      $white;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  PASO 1 — Badge de beca
+// ═══════════════════════════════════════════════════════════════════
+.beca-badge-wrap {
+  display:     flex;
+  align-items: center;
+  gap:         10px;
+  margin-top:  12px;
+  flex-wrap:   wrap;
+}
+
+.beca-badge {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           5px;
+  padding:       4px 10px;
+  border-radius: 20px;
+  font-size:     .75rem;
+  font-weight:   700;
+
+  &.beca-completa {
+    background: #fef9c3;
+    color:      #713f12;
+    border:     1px solid #fde047;
+  }
+
+  &.semi-beca {
+    background: #ede9fe;
+    color:      #5b21b6;
+    border:     1px solid #c4b5fd;
+  }
+
+  &.sin-beca {
+    background: $slate-100;
+    color:      $slate-500;
+    border:     1px solid $slate-300;
+  }
+}
+
+.txt-cargando {
+  display:     flex;
+  align-items: center;
+  gap:         5px;
+  font-size:   .75rem;
+  color:       $slate-500;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  PASO 2 — Dropdown, preview y horario confirmado
+// ═══════════════════════════════════════════════════════════════════
+.dropdown-item-curso {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     center;
+  width:           100%;
+  gap:             8px;
+  min-width:       0;
+
+  .titulo {
+    font-weight:   600;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    white-space:   nowrap;
+    flex:          1;
+  }
+
+  .nivel-badge {
+    font-size:     .72rem;
+    background:    $slate-100;
+    color:         $slate-500;
+    padding:       2px 7px;
+    border-radius: 4px;
+    font-weight:   700;
+    flex-shrink:   0;
+  }
+}
+
+.curso-preview {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             10px;
+  margin-top:      14px;
+  padding:         10px 12px;
+  background:      $slate-50;
+  border:          1px solid $slate-200;
+  border-radius:   $radius-sm;
+  min-width:       0;
+
+  .curso-preview-info {
+    display:        flex;
+    flex-direction: column;
+    gap:            2px;
+    min-width:      0;
+    flex:           1;
+  }
+
+  .curso-preview-nombre {
+    font-size:     .85rem;
+    font-weight:   700;
+    color:         $slate-900;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    white-space:   nowrap;
+  }
+
+  .curso-preview-grupos {
+    font-size: .72rem;
+    color:     $slate-500;
+  }
+}
+
+.horario-confirmado {
+  display:       flex;
+  align-items:   center;
+  gap:           10px;
+  margin-top:    10px;
+  padding:       10px 14px;
+  background:    $azul-light;
+  border:        1.5px solid $azul;
+  border-radius: $radius-sm;
+
+  > i {
+    font-size:   1.1rem;
+    color:       $azul;
+    flex-shrink: 0;
+  }
+
+  > div {
+    flex:           1;
+    display:        flex;
+    flex-direction: column;
+    gap:            2px;
+    min-width:      0;
+  }
+
+  .hc-grupo {
+    font-size:     .85rem;
+    font-weight:   700;
+    color:         $azul-dark;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    white-space:   nowrap;
+  }
+
+  .hc-hora {
+    font-size: .75rem;
+    color:     $slate-500;
+  }
+
+  .btn-quitar {
+    background:    none;
+    border:        none;
+    cursor:        pointer;
+    padding:       4px;
+    border-radius: 50%;
+    color:         $slate-500;
+    display:       flex;
+    align-items:   center;
+    flex-shrink:   0;
+    transition:    color .15s, background .15s;
+
+    &:hover { color: $rojo; background: $rojo-bg; }
+  }
+}
+
+// Alerts inline
+.alert-inline {
+  display:       flex;
+  align-items:   flex-start;
+  gap:           8px;
+  padding:       9px 12px;
+  border-radius: $radius-sm;
+  font-size:     .78rem;
+  font-weight:   600;
+  margin-top:    10px;
+  line-height:   1.4;
+
+  > i { flex-shrink: 0; margin-top: 1px; }
+
+  &.alert-error-inline {
+    background: $rojo-bg;
+    border:     1px solid $rojo-borde;
+    color:      $rojo;
+  }
+
+  &.alert-beca {
+    background: $verde-bg;
+    border:     1px solid #6ee7b7;
+    color:      $verde;
+  }
+
+  &.alert-warn-inline {
+    background: $amber-bg;
+    border:     1px solid $amber-borde;
+    color:      $amber;
+  }
+
+  &.mb-modal { margin-bottom: 14px; margin-top: 0; }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  PASO 3 — Resumen de precios
+// ═══════════════════════════════════════════════════════════════════
+.resumen-detalle {
+  margin-bottom: 16px;
+}
+
+.resumen-fila {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     baseline;
+  gap:             12px;
+  padding:         5px 0;
+  font-size:       .82rem;
+
+  .resumen-label {
+    color:       $slate-500;
+    flex-shrink: 0;
+    font-size:   .78rem;
+  }
+
+  .resumen-valor {
+    font-weight:   600;
+    color:         $slate-900;
+    text-align:    right;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    white-space:   nowrap;
+    max-width:     60%;
+  }
+
+  .resumen-precio-orig { font-size: .82rem; color: $slate-700; font-weight: 600; }
+  .resumen-descuento   { font-weight: 700; color: $verde; white-space: nowrap; }
+
+  &.beca-row {
+    background:    $verde-bg;
+    margin:        0 -4px;
+    padding:       5px 4px;
+    border-radius: 6px;
+  }
+}
+
+.resumen-divisor {
+  height:     1px;
+  background: $slate-200;
+  margin:     10px 0;
+}
+
+.resumen-total-row {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     center;
+  padding:         12px 0 6px;
+  border-top:      2px solid $slate-200;
+  margin-top:      6px;
+
+  .resumen-total-label { font-size: .82rem; font-weight: 600; color: $slate-500; }
+  .resumen-total-monto { font-size: 1.3rem; font-weight: 800; color: $slate-900; }
+}
+
+.resumen-vacio {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            8px;
+  padding:        28px 0;
+  text-align:     center;
+  color:          $slate-300;
+  font-size:      .82rem;
+  font-weight:    600;
+  border:         2px dashed $slate-200;
+  border-radius:  $radius-sm;
+  margin-bottom:  16px;
+
+  i { font-size: 1.8rem; }
+}
+
+.btn-confirmar.p-button {
+  font-size:   .9rem !important;
+  font-weight: 700 !important;
+  padding:     .75rem 1rem !important;
+  margin-top:  4px;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  MODAL DE HORARIOS
+// ═══════════════════════════════════════════════════════════════════
+.modal-header-content {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     flex-start;
+  gap:             12px;
+  width:           100%;
+  min-width:       0;
+
+  > div { min-width: 0; flex: 1; }
+
+  .modal-titulo {
+    display:       block;
+    font-size:     1rem;
+    font-weight:   700;
+    color:         $slate-900;
+    line-height:   1.2;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    white-space:   nowrap;
+  }
+
+  .modal-subtitulo {
+    display:    block;
+    font-size:  .78rem;
+    color:      $slate-500;
+    margin-top: 3px;
+  }
+
+  .modal-precio-badge {
+    background:    $azul;
+    color:         $white;
+    font-size:     .85rem;
+    font-weight:   800;
+    padding:       4px 12px;
+    border-radius: 20px;
+    white-space:   nowrap;
+    flex-shrink:   0;
+  }
+}
+
+.modal-body {
+  padding: 4px 0;
+}
+
+.lista-horarios-modal {
+  display:        flex;
+  flex-direction: column;
+  gap:            10px;
+}
+
+.horario-item-modal {
+  display:       flex;
+  align-items:   center;
+  gap:           14px;
+  padding:       14px 16px;
+  border:        1.5px solid $slate-200;
+  border-radius: $radius-md;
+  cursor:        pointer;
+  transition:    all .18s;
+  background:    $white;
+
+  &:hover:not(.ya-inscrito):not(.agotado) {
+    border-color: $azul;
+    background:   $azul-light;
+  }
+
+  &.seleccionado {
+    border-color: $azul;
+    background:   $azul-light;
+    box-shadow:   0 0 0 3px rgba($azul, .1);
+  }
+
+  &.ya-inscrito {
+    cursor:       not-allowed;
+    opacity:      .6;
+    background:   $slate-50;
+    border-color: $slate-200;
+  }
+
+  &.agotado {
+    cursor:     not-allowed;
+    opacity:    .55;
+    background: $slate-50;
+  }
+}
+
+.hi-icono {
+  width:           36px;
+  height:          36px;
+  border-radius:   50%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+  font-size:       1rem;
+
+  .horario-item-modal.seleccionado & { background: $azul;      color: $white;     }
+  .horario-item-modal.ya-inscrito  & { background: $rojo-bg;   color: $rojo;      }
+  .horario-item-modal.agotado      & { background: $slate-100; color: $slate-500; }
+  .horario-item-modal:not(.seleccionado):not(.ya-inscrito):not(.agotado) & {
+    background: $azul-light;
+    color:      $azul;
+  }
+}
+
+.hi-datos {
+  flex:           1;
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  min-width:      0;
+
+  .hi-nombre {
+    font-size:     .9rem;
+    font-weight:   700;
+    color:         $slate-900;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    white-space:   nowrap;
+  }
+  .hi-hora { font-size: .78rem; color: $slate-500; }
+}
+
+.hi-derecha {
+  display:        flex;
+  flex-direction: column;
+  align-items:    flex-end;
+  gap:            4px;
+  flex-shrink:    0;
+
+  .hi-precio { font-size: .85rem; font-weight: 800; color: $azul-dark; }
+}
+
+.vacantes-badge {
+  font-size:     .7rem;
+  font-weight:   700;
+  padding:       2px 8px;
+  border-radius: 20px;
+  background:    $verde-bg;
+  color:         $verde;
+
+  &.agotado-badge     { background: $rojo-bg; color: $rojo; }
+  &.ya-inscrito-badge { background: $rojo-bg; color: $rojo; }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  RESPONSIVE
+// ═══════════════════════════════════════════════════════════════════
+@media (max-width: 900px) {
+  .pasos-grid .card-paso:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .header-matricula h2 { font-size: 1.1rem; }
+
+  .btn-confirmar.p-button {
+    padding:   1rem !important;
+    font-size: 1rem !important;
+  }
+
+  .modal-header-content { flex-direction: column; }
+}

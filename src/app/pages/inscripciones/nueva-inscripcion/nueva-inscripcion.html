@@ -1,0 +1,311 @@
+<!-- ════════════════════════════════════════════════════════════════
+     CABECERA
+════════════════════════════════════════════════════════════════ -->
+<div class="header-matricula">
+  <p-button
+    icon="pi pi-arrow-left"
+    [text]="true"
+    [rounded]="true"
+    severity="secondary"
+    (onClick)="cerrar.emit()">
+  </p-button>
+  <div>
+    <h2>Registrar matrícula</h2>
+    <p>Selecciona al postulante y el horario a inscribir.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     ERROR DE CARGA
+════════════════════════════════════════════════════════════════ -->
+@if (errorCargaDatos) {
+  <div class="alert-error">
+    <i class="pi pi-exclamation-circle"></i>
+    <span>No se pudieron cargar los datos.
+      <strong (click)="cargarDatos()" style="cursor:pointer;text-decoration:underline">Reintentar</strong>
+    </span>
+  </div>
+}
+
+<!-- ════════════════════════════════════════════════════════════════
+     SPINNER INICIAL
+════════════════════════════════════════════════════════════════ -->
+@if (cargandoDatos) {
+  <div class="estado-cargando">
+    <i class="pi pi-spin pi-spinner"></i>
+    <span>Cargando datos…</span>
+  </div>
+}
+
+@if (!cargandoDatos && !errorCargaDatos) {
+
+  <div class="pasos-grid">
+
+    <!-- ── PASO 1: Postulante ───────────────────────────────────── -->
+    <div class="card-paso" [class.paso-activo]="!!estudianteSeleccionadoId">
+      <div class="paso-header">
+        <div class="paso-numero" [class.completado]="!!estudianteSeleccionadoId">
+          @if (estudianteSeleccionadoId) { <i class="pi pi-check"></i> } @else { 1 }
+        </div>
+        <h3>Postulante</h3>
+      </div>
+
+      <p-select
+        [options]="listaEstudiantes"
+        [(ngModel)]="estudianteSeleccionadoId"
+        (ngModelChange)="onEstudianteCambio()"
+        placeholder="Buscar por DNI o nombre…"
+        optionLabel="nombreCompleto"
+        optionValue="id"
+        [filter]="true"
+        filterBy="nombreCompleto"
+        styleClass="w-full"
+        appendTo="body">
+      </p-select>
+
+      @if (estudianteActivo) {
+        <div class="beca-badge-wrap">
+          <span class="beca-badge {{ claseBeca }}">
+            <i class="pi pi-tag"></i> {{ labelBeca }}
+          </span>
+          @if (cargandoInscripciones) {
+            <span class="txt-cargando">
+              <i class="pi pi-spin pi-spinner"></i> Verificando…
+            </span>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── PASO 2: Curso y horario ──────────────────────────────── -->
+    <div class="card-paso" [class.paso-activo]="!!cursoActivoId">
+      <div class="paso-header">
+        <div class="paso-numero" [class.completado]="!!grupoSeleccionadoId">
+          @if (grupoSeleccionadoId) { <i class="pi pi-check"></i> } @else { 2 }
+        </div>
+        <h3>Curso y horario</h3>
+      </div>
+
+      <p-select
+        [options]="listaCursosConGrupos"
+        [(ngModel)]="cursoActivoId"
+        placeholder="Escribe el nombre del curso…"
+        optionLabel="title"
+        optionValue="id"
+        [filter]="true"
+        filterBy="title"
+        styleClass="w-full"
+        appendTo="body">
+        <ng-template pTemplate="item" let-curso>
+          <div class="dropdown-item-curso">
+            <span class="titulo">{{ curso.title }}</span>
+            <span class="nivel-badge">{{ curso.level }}</span>
+          </div>
+        </ng-template>
+      </p-select>
+
+      @if (cursoActivo) {
+        <div class="curso-preview">
+          <div class="curso-preview-info">
+            <span class="curso-preview-nombre">{{ cursoActivo.title }}</span>
+            <span class="curso-preview-grupos">{{ cursoActivo.grupos.length }} horario(s) disponibles</span>
+          </div>
+          <p-button
+            label="Ver horarios"
+            icon="pi pi-clock"
+            size="small"
+            [outlined]="true"
+            (onClick)="abrirModalHorarios(cursoActivo.id)">
+          </p-button>
+        </div>
+      }
+
+      @if (seleccionadoDetalle) {
+        <div class="horario-confirmado">
+          <i class="pi pi-check-circle"></i>
+          <div>
+            <span class="hc-grupo">{{ seleccionadoDetalle.grupo }}</span>
+            <span class="hc-hora">{{ seleccionadoDetalle.horario }}</span>
+          </div>
+          <button class="btn-quitar" (click)="limpiarSeleccion()" title="Quitar selección">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      }
+
+      @if (errorInscripcionPrevia) {
+        <div class="alert-inline alert-error-inline">
+          <i class="pi pi-exclamation-triangle"></i>
+          El postulante ya está inscrito en ese horario.
+        </div>
+      }
+    </div>
+
+    <!-- ── PASO 3: Resumen ──────────────────────────────────────── -->
+    <div class="card-paso" [class.paso-activo]="puedeConfirmar">
+      <div class="paso-header">
+        <div class="paso-numero" [class.completado]="puedeConfirmar">
+          @if (puedeConfirmar) { <i class="pi pi-check"></i> } @else { 3 }
+        </div>
+        <h3>Resumen</h3>
+      </div>
+
+      @if (seleccionadoDetalle) {
+        <div class="resumen-detalle">
+
+          <div class="resumen-fila">
+            <span class="resumen-label">Curso</span>
+            <span class="resumen-valor">{{ seleccionadoDetalle.curso }}</span>
+          </div>
+          <div class="resumen-fila">
+            <span class="resumen-label">Horario</span>
+            <span class="resumen-valor">{{ seleccionadoDetalle.grupo }}</span>
+          </div>
+          <div class="resumen-fila">
+            <span class="resumen-label">Turno</span>
+            <span class="resumen-valor">{{ seleccionadoDetalle.horario }}</span>
+          </div>
+
+          <div class="resumen-divisor"></div>
+
+          <div class="resumen-fila">
+            <span class="resumen-label">Precio original</span>
+            <span class="resumen-precio-orig">S/ {{ seleccionadoDetalle.precioOriginal.toFixed(2) }}</span>
+          </div>
+
+          @if (seleccionadoDetalle.descuento > 0) {
+            <div class="resumen-fila beca-row">
+              <span class="resumen-label">{{ labelBeca }}</span>
+              <span class="resumen-descuento">
+                − S/ {{ (seleccionadoDetalle.precioOriginal * seleccionadoDetalle.descuento / 100).toFixed(2) }}
+              </span>
+            </div>
+          }
+
+          <div class="resumen-fila">
+            <span class="resumen-label">Emisión de Certificado</span>
+            <span class="resumen-valor" style="color: #0ea5e9; font-weight: 600;">
+              S/ {{ costoCertificado.toFixed(2) }}
+            </span>
+          </div>
+
+          <div class="resumen-total-row">
+            <span class="resumen-total-label">Total a pagar</span>
+            <span class="resumen-total-monto">S/ {{ seleccionadoDetalle.precioFinal.toFixed(2) }}</span>
+          </div>
+
+          @if (seleccionadoDetalle.precioFinal === 0) {
+            <div class="alert-inline alert-beca">
+              <i class="pi pi-star-fill"></i> Exonerado de pago
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="resumen-vacio">
+          <i class="pi pi-inbox"></i>
+          <span>Selecciona un horario para ver el resumen</span>
+        </div>
+      }
+
+      <p-button
+        label="Confirmar inscripción"
+        icon="pi pi-check"
+        styleClass="w-full btn-confirmar"
+        [disabled]="!puedeConfirmar"
+        (onClick)="guardarInscripcion()">
+      </p-button>
+    </div>
+
+  </div><!-- /pasos-grid -->
+
+}<!-- /!cargandoDatos -->
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     MODAL DE HORARIOS
+════════════════════════════════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="modalHorariosVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '500px', maxWidth: '95vw' }"
+  styleClass="modal-horarios"
+  (onHide)="cerrarModalHorarios()">
+
+  <ng-template pTemplate="header">
+    <div class="modal-header-content">
+      <div>
+        <span class="modal-titulo">{{ cursoActivo?.title }}</span>
+        <span class="modal-subtitulo">Toca un horario para seleccionarlo</span>
+      </div>
+      <span class="modal-precio-badge">S/ {{ cursoActivo?.price }}</span>
+    </div>
+  </ng-template>
+
+  <div class="modal-body">
+
+    @if (estudianteActivo && tipoBeca !== null) {
+      <div class="alert-inline alert-beca mb-modal">
+        <i class="pi pi-tag"></i>
+        Se aplicará <strong>{{ labelBeca }}</strong> al precio del curso.
+      </div>
+    }
+
+    @if (!estudianteSeleccionadoId) {
+      <div class="alert-inline alert-warn-inline mb-modal">
+        <i class="pi pi-info-circle"></i>
+        Selecciona un postulante primero para validar inscripciones previas.
+      </div>
+    }
+
+    @if (cursoActivo?.grupos?.length === 0) {
+      <div class="estado-vacio">
+        <i class="pi pi-calendar-times"></i>
+        <p>No hay horarios habilitados para este curso.</p>
+      </div>
+    } @else {
+      <div class="lista-horarios-modal">
+        @for (grupo of cursoActivo?.grupos; track grupo.id) {
+          <div
+            class="horario-item-modal"
+            [class.seleccionado]="estaSeleccionado(grupo.id)"
+            [class.ya-inscrito]="tieneInscripcionPrevia(grupo.id)"
+            [class.agotado]="grupo.capacity <= 0 && !tieneInscripcionPrevia(grupo.id)"
+            (click)="seleccionarGrupoYCerrar(grupo.id)">
+
+            <div class="hi-icono">
+              @if (tieneInscripcionPrevia(grupo.id)) {
+                <i class="pi pi-ban"></i>
+              } @else if (estaSeleccionado(grupo.id)) {
+                <i class="pi pi-check-circle"></i>
+              } @else {
+                <i class="pi pi-clock"></i>
+              }
+            </div>
+
+            <div class="hi-datos">
+              <span class="hi-nombre">{{ grupo.name }}</span>
+              <span class="hi-hora">{{ grupo.startTime | slice:0:5 }} – {{ grupo.endTime | slice:0:5 }}</span>
+            </div>
+
+            <div class="hi-derecha">
+              @if (tieneInscripcionPrevia(grupo.id)) {
+                <span class="vacantes-badge ya-inscrito-badge">Ya inscrito</span>
+              } @else {
+                <span class="vacantes-badge" [class.agotado-badge]="grupo.capacity <= 0">
+                  {{ grupo.capacity > 0 ? grupo.capacity + ' vac.' : 'Sin vacantes' }}
+                </span>
+              }
+              <span class="hi-precio">
+                S/ {{ ((cursoActivo?.price ?? 0) * (1 - porcentajeDescuento / 100)).toFixed(2) }}
+              </span>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+</p-dialog>

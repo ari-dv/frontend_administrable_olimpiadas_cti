@@ -1,0 +1,145 @@
+@if (!mostrarFormularioNuevo) {
+  <div class="page-header">
+    <div class="header-titles">
+      <h1>Control de Inscripciones</h1>
+      <p>Consolidado de postulantes registrados y asignación de fotochecks.</p>
+    </div>
+    <p-button label="Nueva Inscripción" icon="pi pi-plus" styleClass="btn-nuevo" (onClick)="mostrarFormularioNuevo = true"></p-button>
+  </div>
+
+  <div class="card-tabla">
+    <div class="tabla-toolbar">
+      <p-iconField iconPosition="left" class="campo-busqueda">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input type="text" pInputText placeholder="Buscar postulante registrado..." class="input-search-full" (input)="dtInscripciones.filterGlobal($any($event.target).value, 'contains')" />
+      </p-iconField>
+
+      <p-select [options]="cursosFiltro" placeholder="Todos los cursos" optionLabel="label" optionValue="value" [showClear]="true" (onChange)="dtInscripciones.filter($event.value, 'cursosResumen', 'contains')" styleClass="campo-filtro" appendTo="body"></p-select>
+    </div>
+
+    <p-table #dtInscripciones 
+             [value]="listaAgregadaPostulantes" 
+             [globalFilterFields]="['estudiante.dni', 'estudiante.names', 'estudiante.lastNames', 'cursosResumen']" 
+             [loading]="cargando" 
+             styleClass="p-datatable-sm"
+             responsiveLayout="scroll">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="col-icono"></th>
+          <th class="col-carnet">CARNET</th>
+          <th class="col-dni">DNI</th>
+          <th class="col-postulante">POSTULANTE</th>
+          <th class="col-cursos">CURSOS ASIGNADOS</th>
+          <th class="col-acciones">FOTO</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>
+            <p-button 
+              [icon]="filasExpandidas[row.llaveFila] ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" 
+              [text]="true" [rounded]="true" severity="secondary" 
+              (onClick)="conmutarFila(row.llaveFila)">
+            </p-button>
+          </td>
+          <td>
+            @if (row.estudiante.imagePath) {
+              <img [src]="row.estudiante.imagePath" alt="Carnet" class="img-carnet" />
+            } @else {
+              <div class="img-placeholder-carnet"><i class="pi pi-user"></i></div>
+            }
+          </td>
+          <td class="td-dni">{{ row.estudiante.dni }}</td>
+          <td>{{ row.estudiante.lastNames }}, {{ row.estudiante.names }}</td>
+          <td>
+            <div class="cursos-asignados-badge">
+              <i class="pi pi-book"></i>
+              <span>{{ row.cursosResumen }}</span>
+            </div>
+          </td>
+          <td class="col-acciones">
+            <p-button icon="pi pi-camera" label="Cambiar" size="small" [outlined]="true" severity="secondary" (onClick)="abrirModalFoto(row.estudiante)"></p-button>
+          </td>
+        </tr>
+        
+        @if (filasExpandidas[row.llaveFila]) {
+          <tr>
+            <td colspan="6" class="td-expansion">
+              <div class="expansion-wrapper">
+                <div class="expansion-header">
+                  <div class="icon-circle"><i class="pi pi-list"></i></div>
+                  <span>Detalle de Inscripciones para <strong>{{ row.estudiante.names }}</strong>:</span>
+                </div>
+                
+                <div class="table-responsive-container">
+                  <p-table [value]="row.detalles" styleClass="p-datatable-sm tabla-interna-card" responsiveLayout="scroll">
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th class="col-fecha">FECHA</th>
+                        <th class="col-curso-interno">CURSO</th>
+                        <th class="col-grupo">GRUPO</th>
+                        <th class="col-eliminar"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-detalle>
+                      <tr>
+                        <td>{{ detalle.enrollmentDate | date:'dd/MM/yyyy' }}</td>
+                        <td class="td-curso-interno">{{ detalle.grupo?.curso?.title }}</td>
+                        <td>
+                          <span class="badge-grupo-interno">{{ detalle.grupo?.name }}</span>
+                        </td>
+                        <td class="col-eliminar">
+                          <p-button icon="pi pi-trash" [text]="true" severity="danger" (onClick)="confirmarAnularInscripcion(detalle.id)"></p-button>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </td>
+          </tr>
+        }
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="tabla-vacia">No hay postulantes inscritos en el sistema actualmente.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p-dialog header="Actualizar Foto de Carnet" [(visible)]="mostrarModalFoto" [modal]="true" [style]="{ width: '90vw', maxWidth: '450px' }" [draggable]="false" [resizable]="false">
+    <form [formGroup]="fotoForm" class="form-modal-foto">
+      
+      <div class="box-upload-pc">
+        <label>Subir desde la PC:</label>
+        <input type="file" accept="image/*" (change)="onFotoSeleccionada($event)" class="input-file-custom" />
+      </div>
+
+      <div class="box-upload-url">
+        <label>O pegar enlace de internet (URL):</label>
+        <input pInputText formControlName="imagePath" placeholder="https://..." class="w-full input-url" />
+      </div>
+
+      @if (fotoForm.value.imagePath) {
+        <div class="preview-container">
+          <img [src]="fotoForm.value.imagePath" alt="Previsualización" class="img-preview" />
+        </div>
+      }
+    </form>
+    
+    <ng-template pTemplate="footer">
+      <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="mostrarModalFoto = false"></p-button>
+      <p-button label="Guardar Carnet" icon="pi pi-save" (onClick)="guardarFotoCarnet()" styleClass="btn-guardar" [disabled]="fotoForm.invalid"></p-button>
+    </ng-template>
+  </p-dialog>
+
+} @else {
+  <app-nueva-inscripcion 
+    (cerrar)="mostrarFormularioNuevo = false" 
+    (recargarLista)="cargarInscripciones()">
+  </app-nueva-inscripcion>
+}

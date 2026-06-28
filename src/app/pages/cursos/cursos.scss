@@ -1,0 +1,200 @@
+/* =========================================
+   1. CABECERA DE LA PÁGINA
+   ========================================= */
+   .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  
+    .header-titles {
+      h1 { margin: 0; color: #1e293b; font-size: 1.8rem; }
+      p { margin: 5px 0 0 0; color: #64748b; font-size: 0.95rem; }
+    }
+  
+    ::ng-deep .btn-nuevo {
+      background-color: #0ea5e9;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1.2rem;
+      &:hover { background-color: #0284c7; }
+    }
+  }
+  
+  /* =========================================
+     2. CONTENEDOR DE LA TABLA PRINCIPAL
+     ========================================= */
+  .card-tabla {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+  
+    .tabla-toolbar {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      .input-buscar { width: 100%; max-width: 400px; border-radius: 6px; }
+    }
+  
+    /* Extras de tabla */
+    .badge-periodo {
+      background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 600; color: #475569;
+    }
+  
+    ::ng-deep {
+      .p-datatable .p-datatable-thead > tr > th { 
+        background-color: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; padding: 1rem 1.5rem; white-space: nowrap;
+      }
+      .p-datatable .p-datatable-tbody > tr > td { 
+        padding: 1rem 1.5rem; color: #334155; border-bottom: 1px solid #f1f5f9; 
+      }
+      
+      .img-curso {
+        width: 40px; height: 40px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: block;
+      }
+      .img-placeholder {
+        width: 40px; height: 40px; background-color: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #94a3b8;
+      }
+    }
+  }
+  
+  /* =========================================
+     3. ESTILOS DE LOS MODALES (Globales)
+     ========================================= */
+  ::ng-deep {
+    .p-dialog-header {
+      border-bottom: 1px solid #f1f5f9;
+      h2, .p-dialog-title { font-weight: 600; color: #1e293b; }
+    }
+  
+    .btn-guardar {
+      background-color: #0284c7; border: none;
+      &:hover { background-color: #0369a1; }
+      &:disabled { opacity: 0.6; }
+    }
+  }
+  
+  /* Layout Formulario Curso */
+  .form-curso-layout {
+    display: flex; 
+    gap: 20px; 
+    align-items: flex-start; 
+    padding-top: 10px;
+  
+    .col-imagen {
+      display: flex; flex-direction: column; align-items: center; gap: 10px; width: 130px; flex-shrink: 0;
+  
+      .img-preview { width: 120px; height: 120px; border-radius: 8px; border: 1px solid #e2e8f0; object-fit: cover; }
+      .img-empty {
+        width: 120px; height: 120px; border-radius: 8px; background: #f8fafc; border: 1px dashed #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8;
+        i { font-size: 2rem; margin-bottom: 5px; }
+        span { font-size: 0.75rem; }
+      }
+      .file-name { font-size: 0.7rem; color: #64748b; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+    }
+  
+    .col-campos {
+      flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px;
+    }
+  }
+  
+  /* Campos Genéricos */
+  .campo {
+    width: 100%;
+    margin-bottom: 10px;
+    
+    label { font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px; display: block; }
+    .error-text { color: #ef4444; font-size: 0.75rem; margin-top: 2px; display: block; }
+  }
+  
+  .fila-doble {
+    display: flex; gap: 15px; width: 100%;
+    .campo { flex: 1; min-width: 0; margin: 0; }
+  }
+  
+  /* =========================================
+     4. DISEÑO DEL MODAL DE HORARIOS
+     ========================================= */
+  .box-crear-horario {
+    background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 20px; margin-bottom: 25px;
+  
+    .box-header {
+      font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
+      i { color: #0ea5e9; }
+    }
+  
+    .form-horario {
+      display: flex; flex-direction: column; gap: 15px;
+  
+      .fila-flex {
+        display: flex; gap: 15px; flex-wrap: wrap; 
+        &.items-end { align-items: flex-end; }
+        
+        .flex-1 { flex: 1; min-width: 120px; }
+        .flex-1-5 { flex: 1.5; min-width: 150px; }
+        .flex-2-5 { flex: 2.5; min-width: 200px; }
+      }
+    }
+  }
+  
+  ::ng-deep .btn-guardar-horario {
+    background-color: #0f172a; border: none;
+    &:hover { background-color: #334155 !important; }
+  }
+  
+  .box-lista-horarios {
+    .box-header {
+      font-size: 1rem; font-weight: 700; color: #334155; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
+      i { color: #64748b; }
+    }
+  }
+  
+  ::ng-deep {
+    .tabla-interna-card {
+      background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 6px !important; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05) !important;
+  
+      .p-datatable-thead > tr > th {
+        background-color: #f1f5f9 !important; color: #64748b !important; font-weight: 700 !important; font-size: 0.75rem !important; padding: 0.8rem !important; border-bottom: 1px solid #e2e8f0 !important; white-space: nowrap;
+      }
+      .p-datatable-tbody > tr > td { padding: 0.6rem 0.8rem !important; border-bottom: 1px solid #f1f5f9 !important; }
+    }
+    .tag-vacantes .p-tag { padding: 0.2rem 0.8rem; font-size: 0.85rem; font-weight: 700; }
+    .p-inputnumber.w-full { width: 100%; .p-inputnumber-input { width: 100%; flex: 1 1 auto; } }
+  }
+  
+  /* =========================================
+     5. RESPONSIVE (MEDIA QUERIES)
+     ========================================= */
+  @media (max-width: 768px) {
+    /* Cabecera apilada */
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+  
+      .btn-nuevo { width: 100%; }
+    }
+  
+    /* Formulario Curso: Imagen arriba, campos abajo */
+    .form-curso-layout {
+      flex-direction: column;
+      align-items: center;
+  
+      .col-campos { width: 100%; }
+    }
+  
+    /* Filas dobles se vuelven 1 sola columna */
+    .fila-doble {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    /* Modal Horarios: Los inputs toman todo el ancho */
+    .box-crear-horario .form-horario .fila-flex {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+  
+      .flex-1, .flex-1-5, .flex-2-5 { min-width: 100%; }
+    }
+  }

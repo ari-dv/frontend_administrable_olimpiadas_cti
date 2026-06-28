@@ -1,0 +1,252 @@
+<div class="page-header">
+  <div class="header-titles">
+    <h1>Cursos</h1>
+    <p>Gestión de cursos académicos y sus horarios.</p>
+  </div>
+  <p-button label="Nuevo Curso" icon="pi pi-plus" styleClass="btn-nuevo" (onClick)="abrirModalNuevo()"></p-button>
+</div>
+
+<div class="card-tabla">
+  <div class="tabla-toolbar">
+    <p-iconField iconPosition="left">
+      <p-inputIcon styleClass="pi pi-search" />
+      <input type="text" pInputText placeholder="Buscar curso..." class="input-buscar" (input)="dtCursos.filterGlobal($any($event.target).value, 'contains')" />
+    </p-iconField>
+  </div>
+
+  <p-table #dtCursos [value]="listaCursos" [globalFilterFields]="['title', 'level']" [loading]="cargando" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '60rem' }">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 4rem">IMG</th>
+        <th>NOMBRE</th>
+        <th>NIVEL</th>
+        <th>PERIODO</th> 
+        <th>PRECIO</th>
+        <th>ESTADO</th>
+        <th class="col-acciones">ACCIONES</th>
+      </tr>
+    </ng-template>
+    
+    <ng-template pTemplate="body" let-curso>
+      <tr>
+        <td>
+          @if (curso.imagePath) {
+            <img [src]="curso.imagePath" alt="Curso" class="img-curso" />
+          } @else {
+            <div class="img-placeholder"><i class="pi pi-image"></i></div>
+          }
+        </td>
+        <td style="font-weight: 500;">{{ curso.title }}</td>
+        <td>{{ curso.level }}</td>
+        <td>
+          <span class="badge-periodo">{{ curso.period }}</span>
+        </td>
+        <td>S/ {{ curso.price }}</td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <p-toggleSwitch [(ngModel)]="curso.isActive" (onChange)="cambiarEstado(curso)"></p-toggleSwitch>
+            <span style="font-size: 0.85rem; font-weight: 500;" [style.color]="curso.isActive ? '#0f172a' : '#94a3b8'">
+              {{ curso.isActive ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+        </td>
+        <td class="col-acciones">
+          <div style="display: flex; gap: 4px; justify-content: flex-end;">
+            <p-button label="Horarios" icon="pi pi-calendar" size="small" severity="info" [outlined]="true" (onClick)="abrirModalHorarios(curso)"></p-button>
+            <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" severity="secondary" pTooltip="Editar" tooltipPosition="top" (onClick)="abrirModalEditar(curso)"></p-button>
+            <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" pTooltip="Eliminar" tooltipPosition="top" (onClick)="confirmarEliminar(curso.id)"></p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" style="text-align: center; padding: 20px; color: #64748b;">No hay cursos registrados.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog [header]="editando ? 'Editar Curso' : 'Nuevo Curso'" [(visible)]="mostrarModal" [modal]="true" [style]="{ width: '90vw', maxWidth: '550px' }" [draggable]="false" [resizable]="false">
+  <form [formGroup]="cursoForm" class="form-curso-layout">
+    
+    <div class="col-imagen">
+      <input type="file" #fileInput (change)="seleccionarImagen($event)" accept="image/*" style="display: none;" />
+      
+      @if (vistaPrevia || cursoForm.value.imagePath) {
+        <img [src]="vistaPrevia || cursoForm.value.imagePath" class="img-preview" />
+      } @else {
+        <div class="img-empty">
+          <i class="pi pi-image"></i>
+          <span>Sin imagen</span>
+        </div>
+      }
+      
+      <p-button label="Subir foto" icon="pi pi-upload" size="small" severity="secondary" styleClass="w-full" (onClick)="fileInput.click()"></p-button>
+      <span class="file-name">{{ archivoSeleccionado ? archivoSeleccionado.name : 'Opcional' }}</span>
+    </div>
+
+    <div class="col-campos">
+      <div class="fila-doble">
+        <div class="campo">
+          <label>Periodo</label>
+          <p-select [options]="opcionesPeriodo" formControlName="period" placeholder="Selecciona" optionLabel="label" optionValue="value" styleClass="w-full" appendTo="body"></p-select>
+          @if (cursoForm.get('period')?.invalid && cursoForm.get('period')?.touched) {
+            <small class="error-text">Requerido.</small>
+          }
+        </div>
+        <div class="campo">
+          <label>Nivel</label>
+          <p-select [options]="niveles" formControlName="level" placeholder="Selecciona" optionLabel="label" optionValue="value" styleClass="w-full" appendTo="body"></p-select>
+          @if (cursoForm.get('level')?.invalid && cursoForm.get('level')?.touched) {
+            <small class="error-text">Requerido.</small>
+          }
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>Nombre del Curso</label>
+        <input pInputText formControlName="title" placeholder="Ej: Aritmética" class="w-full" />
+        @if (cursoForm.get('title')?.invalid && cursoForm.get('title')?.touched) {
+          <small class="error-text">El nombre es obligatorio.</small>
+        }
+      </div>
+
+      <div class="fila-doble">
+        <div class="campo">
+          <label>Precio (S/)</label>
+          <p-inputNumber formControlName="price" mode="currency" currency="PEN" styleClass="w-full"></p-inputNumber>
+          
+          @if (cursoForm.get('price')?.invalid && cursoForm.get('price')?.touched) {
+            <small class="error-text">El precio es obligatorio.</small>
+          }
+
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="cerrarModal()"></p-button>
+    <p-button label="Guardar" (onClick)="guardarCurso()" styleClass="btn-guardar" [disabled]="cursoForm.invalid"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [header]="'Gestión de Horarios: ' + (cursoSeleccionadoParaHorarios?.title || '')" [(visible)]="mostrarModalHorarios" [modal]="true" [style]="{ width: '95vw', maxWidth: '850px' }" [draggable]="false" [resizable]="false">
+  
+  <div class="box-crear-horario">
+    <div class="box-header">
+      <i class="pi pi-plus-circle"></i>
+      <span>Registrar Nuevo Horario / Grupo</span>
+    </div>
+    
+    <form [formGroup]="horarioForm" class="form-horario">
+      <div class="fila-flex">
+        <div class="campo flex-1-5">
+          <label>Nombre del Grupo</label>
+          <input pInputText formControlName="name" class="w-full" placeholder="Ej: Grupo A..." />
+        </div>
+        <div class="campo flex-2-5">
+          <label>Días de Dictado</label>
+          <p-multiSelect [options]="opcionesDias" formControlName="diasArray" optionLabel="label" optionValue="value" styleClass="w-full" appendTo="body" display="chip" placeholder="Selecciona los días..."></p-multiSelect>
+        </div>
+      </div>
+
+      <div class="fila-flex items-end">
+        <div class="campo flex-1">
+          <label>Hora Inicio</label>
+          <input type="time" pInputText formControlName="startTime" class="w-full" />
+        </div>
+        <div class="campo flex-1">
+          <label>Hora Fin</label>
+          <input type="time" pInputText formControlName="endTime" class="w-full" />
+        </div>
+        <div class="campo flex-1">
+          <label>Vacantes</label>
+          <p-inputNumber formControlName="capacity" styleClass="w-full" [inputStyle]="{'width': '100%'}" [showButtons]="true" [min]="1"></p-inputNumber>
+        </div>
+        <div class="campo flex-1-5">
+          <p-button label="Agregar Grupo" icon="pi pi-check" (onClick)="guardarHorario()" [disabled]="horarioForm.invalid" styleClass="w-full btn-guardar-horario"></p-button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="box-lista-horarios">
+    <div class="box-header">
+      <i class="pi pi-list"></i>
+      <span>Horarios Disponibles</span>
+    </div>
+
+    <p-table [value]="listaHorarios" styleClass="p-datatable-sm tabla-interna-card" [tableStyle]="{ 'min-width': '40rem' }" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>GRUPO</th>
+          <th>DÍAS</th>
+          <th>RANGO DE HORAS</th>
+          <th style="width: 6rem; text-align: center;">VACANTES</th>
+          <th style="width: 7rem; text-align: right;">ACCIONES</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-horario>
+        <tr>
+          <td style="font-weight: 600; color: #0f172a;">{{ horario.name }}</td>
+          <td style="font-size: 0.85rem; color: #475569;">
+            <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px;">{{ horario.days }}</span>
+          </td>
+          <td style="font-size: 0.85rem; font-weight: 600; color: #0284c7;">
+            <i class="pi pi-clock" style="margin-right: 4px;"></i>
+            {{ horario.startTime | slice:0:5 }} - {{ horario.endTime | slice:0:5 }}
+          </td>
+          <td style="text-align: center;">
+            <p-tag [value]="horario.capacity" severity="success" [rounded]="true" styleClass="tag-vacantes"></p-tag>
+          </td>
+          <td style="text-align: right;">
+            <div style="display: flex; gap: 4px; justify-content: flex-end;">
+              <p-button icon="pi pi-users" [text]="true" [rounded]="true" severity="info" pTooltip="Ver inscritos" tooltipPosition="top" (onClick)="verAlumnosDelGrupo(horario.id)"></p-button>
+              <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" pTooltip="Eliminar" tooltipPosition="top" (onClick)="eliminarHorario(horario.id)"></p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" style="text-align: center; padding: 30px; color: #94a3b8; font-style: italic; background: #f8fafc;">
+            Aún no has registrado ningún horario. ¡Agrega uno arriba!
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</p-dialog>
+
+<p-dialog header="Lista de Alumnos" [(visible)]="mostrarModalAlumnos" [modal]="true" [style]="{ width: '90vw', maxWidth: '550px' }" [draggable]="false" [resizable]="false" appendTo="body">
+  <p-table [value]="listaAlumnosGrupo" styleClass="p-datatable-sm card-tabla" [responsiveLayout]="'scroll'">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>DNI</th>
+        <th>POSTULANTE</th>
+        <th>FECHA INSCRIPCIÓN</th>
+      </tr>
+    </ng-template>
+    
+    <ng-template pTemplate="body" let-inscripcion>
+      <tr>
+        <td style="font-weight: 600; color: #64748b;">{{ inscripcion.estudiante?.dni }}</td>
+        <td style="font-weight: 500;">{{ inscripcion.estudiante?.lastNames }}, {{ inscripcion.estudiante?.names }}</td>
+        <td style="color: #64748b; font-size: 0.85rem;">{{ inscripcion.enrollmentDate | date:'dd/MM/yyyy' }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="3" style="text-align: center; padding: 20px; color: #64748b;">
+          Aún no hay alumnos inscritos en este horario.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

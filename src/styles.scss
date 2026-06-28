@@ -1,0 +1,10 @@
+body {
+  margin: 0;
+  font-family: var(--font-family, sans-serif);
+  background-color: #f4f6f9;
+}
+
+/* Forzar a SweetAlert a estar por encima de los modales de PrimeNG */
+.swal2-container {
+  z-index: 99999 !important;
+}

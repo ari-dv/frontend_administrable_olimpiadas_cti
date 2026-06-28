@@ -1,0 +1,115 @@
+<div class="page-header">
+  <div class="header-titles">
+    <h1>Estudiantes</h1>
+    <p>Gestión de alumnos académicos registrados.</p>
+  </div>
+  <p-button label="Nuevo Estudiante" icon="pi pi-plus" styleClass="btn-nuevo" (onClick)="abrirModalNuevo()"></p-button>
+</div>
+
+<div class="card-tabla">
+  <div class="tabla-toolbar">
+    <p-iconField iconPosition="left">
+      <p-inputIcon styleClass="pi pi-search" />
+      <input type="text" pInputText placeholder="Buscar estudiante..." class="input-buscar" (input)="dtEstudiantes.filterGlobal($any($event.target).value, 'contains')" />
+    </p-iconField>
+  </div>
+
+  <p-table #dtEstudiantes [value]="listaEstudiantes" [globalFilterFields]="['dni', 'names', 'lastNames', 'email']" [loading]="cargando" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '60rem' }" [responsiveLayout]="'scroll'">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 7rem">DNI</th>
+        <th>NOMBRES Y APELLIDOS</th>
+        <th>CORREO ELECTRÓNICO</th>
+        <th>TELÉFONO</th>
+        <th>ESTADO</th>
+        <th class="col-acciones">ACCIONES</th>
+      </tr>
+    </ng-template>
+    
+    <ng-template pTemplate="body" let-estudiante>
+      <tr>
+        <td style="font-weight: 600; color: #64748b;">{{ estudiante.dni }}</td>
+        <td style="font-weight: 500;">{{ estudiante.names }}, {{ estudiante.lastNames }}</td>
+        <td style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="estudiante.email">
+          {{ estudiante.email }}
+        </td>
+        <td>{{ estudiante.phone || '-' }}</td>
+        <td>
+          <p-tag 
+            [value]="estudiante.isActive ? 'Activo' : 'Inactivo'" 
+            [severity]="estudiante.isActive ? 'contrast' : 'secondary'"
+            [style]="estudiante.isActive ? {'background-color': '#0f172a'} : {'background-color': '#f8fafc', 'color': '#64748b', 'border': '1px solid #e2e8f0'}">
+          </p-tag>
+        </td>
+        <td class="col-acciones">
+          <p-button icon="pi pi-pencil" [text]="true" severity="secondary" (onClick)="abrirModalEditar(estudiante)"></p-button>
+          <p-button icon="pi pi-trash" [text]="true" severity="secondary" (onClick)="confirmarEliminar(estudiante.id)"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog [header]="editando ? 'Editar Estudiante' : 'Nuevo Estudiante'" [(visible)]="mostrarModal" [modal]="true" [style]="{ width: '90vw', maxWidth: '450px' }" [draggable]="false" [resizable]="false">
+  
+  <form [formGroup]="estudianteForm" class="form-modal">
+    
+    <div class="campo">
+      <label>Número de DNI</label>
+      
+      <div class="p-inputgroup">
+        <input pInputText formControlName="dni" placeholder="Ej: 74839201" maxlength="8" class="w-full" [disabled]="buscandoDni" />
+        
+        @if (buscandoDni) {
+          <span class="p-inputgroup-addon bg-blue-50">
+            <i class="pi pi-spin pi-spinner text-blue-500"></i>
+          </span>
+        }
+      </div>
+
+      @if (estudianteForm.get('dni')?.invalid && estudianteForm.get('dni')?.touched) {
+        <small class="error-text">El DNI es obligatorio y debe tener 8 dígitos numéricos.</small>
+      }
+    </div>
+
+    <div class="fila-doble">
+      <div class="campo">
+        <label>Nombres</label>
+        <input pInputText formControlName="names" placeholder="Ej: Juan Carlos" class="w-full" />
+        @if (estudianteForm.get('names')?.invalid && estudianteForm.get('names')?.touched) {
+          <small class="error-text">El nombre es requerido.</small>
+        }
+      </div>
+      <div class="campo">
+        <label>Apellidos</label>
+        <input pInputText formControlName="lastNames" placeholder="Ej: Pérez Ramos" class="w-full" />
+        @if (estudianteForm.get('lastNames')?.invalid && estudianteForm.get('lastNames')?.touched) {
+          <small class="error-text">El apellido es requerido.</small>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Correo Electrónico</label>
+      <input pInputText formControlName="email" placeholder="ejemplo@correo.com" class="w-full" />
+      @if (estudianteForm.get('email')?.invalid && estudianteForm.get('email')?.touched) {
+        <small class="error-text">Introduce un correo electrónico válido.</small>
+      }
+    </div>
+
+    <div class="campo">
+      <label>Teléfono Celular (Opcional)</label>
+      <input pInputText formControlName="phone" placeholder="Ej: 987654321" maxlength="9" class="w-full" />
+      @if (estudianteForm.get('phone')?.invalid && estudianteForm.get('phone')?.touched) {
+        <small class="error-text">Debe tener 9 dígitos numéricos.</small>
+      }
+    </div>
+
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="cerrarModal()"></p-button>
+    <p-button label="Guardar Alumno" (onClick)="guardarEstudiante()" styleClass="btn-guardar" [disabled]="estudianteForm.invalid"></p-button>
+  </ng-template>
+
+</p-dialog>
