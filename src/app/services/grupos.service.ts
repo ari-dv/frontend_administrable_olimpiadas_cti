@@ -10,8 +10,8 @@ export class GruposService {
 
   constructor(private http: HttpClient) { }
 
-  listarGrupos(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  listarGrupos(): Observable<any> {
+    return this.http.get<any>(this.apiUrl);
   }
 
   crearGrupo(grupo: any): Observable<any> {
@@ -26,7 +26,7 @@ export class GruposService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  listarPorCurso(cursoId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/curso/${cursoId}`);
+  listarPorCurso(cursoId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/curso/${cursoId}`);
   }
 }

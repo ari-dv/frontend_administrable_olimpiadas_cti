@@ -77,7 +77,20 @@ export class InscripcionesComponent implements OnInit {
     const cursosSet = new Set<string>();
 
     inscripciones.forEach(ins => {
-      const est = ins.estudiante;
+      // El backend puede devolver 'estudiante' o 'student'
+      const est = ins.estudiante ?? ins.student;
+      if (!est) return;
+
+      // Normalizar: guardar siempre como 'estudiante' y 'grupo'
+      if (!ins.estudiante && ins.student) ins.estudiante = ins.student;
+      if (!ins.grupo && ins.group) ins.grupo = ins.group;
+
+      // Normalizar el campo curso dentro del grupo
+      const grupo = ins.grupo;
+      if (grupo && !grupo.curso && grupo.course) {
+        grupo.curso = grupo.course;
+      }
+
       if (!mapa.has(est.id)) {
         mapa.set(est.id, {
           llaveFila: String(est.id), 
@@ -90,7 +103,7 @@ export class InscripcionesComponent implements OnInit {
       const item = mapa.get(est.id);
       item.detalles.push(ins);
       
-      const nombreCurso = ins.grupo?.curso?.title;
+      const nombreCurso = grupo?.curso?.title ?? grupo?.course?.title;
       if (nombreCurso) {
         cursosSet.add(nombreCurso);
         if (!item.nombresCursos.includes(nombreCurso)) {

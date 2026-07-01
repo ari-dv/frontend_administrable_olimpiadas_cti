@@ -80,9 +80,15 @@ export class NuevaInscripcionComponent implements OnInit {
           nombreCompleto: `${e.dni} — ${e.lastNames}, ${e.names}`
         }));
 
+        // Normalizar campo curso/course en cada grupo
+        const gruposNormalizados = grupos.map((g: any) => ({
+          ...g,
+          curso: g.curso ?? g.course
+        }));
+
         this.listaCursosConGrupos = cursos.map((c: any) => ({
           ...c,
-          grupos: grupos.filter((g: any) => g.curso?.id === c.id)
+          grupos: gruposNormalizados.filter((g: any) => g.curso?.id === c.id)
         }));
 
         this.cargandoDatos = false;
@@ -110,7 +116,7 @@ export class NuevaInscripcionComponent implements OnInit {
         next: (data: any) => {
           const lista = data.content ?? data;
           this.gruposConInscripcionPrevia = new Set(
-            lista.map((i: any) => i.group?.id ?? i.groupId)
+            lista.map((i: any) => i.group?.id ?? i.grupo?.id ?? i.groupId ?? i.grupoId)
           );
           this.cargandoInscripciones = false;
           this.cdr.detectChanges();

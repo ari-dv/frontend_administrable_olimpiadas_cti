@@ -11,7 +11,7 @@ export class InscripcionesService {
   constructor(private http: HttpClient) { }
 
   listarInscripciones(): Observable<any> {
-    return this.http.get(this.apiUrl);
+    return this.http.get(`${this.apiUrl}?page=0&size=1000`);
   }
 
   crearInscripcion(inscripcion: any): Observable<any> {
@@ -26,11 +26,11 @@ export class InscripcionesService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  listarPorGrupo(grupoId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/grupo/${grupoId}`);
+  listarPorGrupo(grupoId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/grupo/${grupoId}`);
   }
 
-  listarPorEstudiante(estudianteId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/estudiante/${estudianteId}`);
+  listarPorEstudiante(estudianteId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/estudiante/${estudianteId}`);
   }
 }

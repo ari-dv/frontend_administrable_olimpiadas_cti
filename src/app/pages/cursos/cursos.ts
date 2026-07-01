@@ -278,8 +278,9 @@ export class CursosComponent implements OnInit {
 
   cargarHorariosDelCurso(cursoId: number) {
     this.gruposService.listarPorCurso(cursoId).subscribe({
-      next: (datos) => {
-        this.listaHorarios = datos;
+      next: (datos: any) => {
+        // Manejar respuesta paginada del backend (content) o array directo
+        this.listaHorarios = datos?.content ?? (Array.isArray(datos) ? datos : []);
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error al cargar horarios', err)
@@ -327,8 +328,13 @@ export class CursosComponent implements OnInit {
     this.mostrarModalAlumnos = true; 
 
     this.inscripcionesService.listarPorGrupo(grupoId).subscribe({
-      next: (datos) => {
-        this.listaAlumnosGrupo = datos;
+      next: (datos: any) => {
+        const lista = datos?.content ?? (Array.isArray(datos) ? datos : []);
+        // Normalizar campo estudiante/student
+        this.listaAlumnosGrupo = lista.map((ins: any) => ({
+          ...ins,
+          estudiante: ins.estudiante ?? ins.student
+        }));
       },
       error: (err) => console.error('Error al cargar alumnos', err)
     });
