@@ -1,63 +1,70 @@
-<<<<<<< HEAD
-# DemoFrontendOlimpiadas
+# 🏅 Olimpiadas Escolares CTI - Frontend Público
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.4.
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![PrimeReact](https://img.shields.io/badge/PrimeReact-06b6d4?style=for-the-badge&logo=primevideo&logoColor=white)
 
-## Development server
+Plataforma web pública desarrollada para el **Centro en Tecnologías de Información (CTI)** de la UNSM. Este sistema permite a los estudiantes y padres de familia visualizar los resultados de los colegios de procedencia, explorar el catálogo de cursos disponibles y realizar su proceso de inscripción de manera intuitiva y optimizada.
 
-To start a local development server, run:
+## 🚀 Arquitectura y Tecnologías
 
-```bash
-ng serve
-```
+El proyecto está construido bajo una arquitectura de Single Page Application (SPA) para garantizar tiempos de respuesta mínimos.
+- Framework: React 19
+- Bundler: Vite 8 (Hot Module Replacement ultrarrápido)
+- Lenguaje: TypeScript (Tipado estático seguro)
+- UI Kit: PrimeReact (Componentes accesibles y responsivos)
+- Peticiones HTTP: Axios (Integración con API REST Spring Boot)
+- Enrutamiento: React Router DOM v7
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## ⚙️ Prerrequisitos
 
-## Code scaffolding
+Asegúrate de tener instalados los siguientes entornos en tu máquina local antes de levantar el proyecto:
+- Node.js (v18.0.0 o superior)
+- npm (v9.0.0 o superior)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🛠️ Configuración de Variables de Entorno
 
-```bash
-ng generate component component-name
-```
+Antes de iniciar la aplicación, crea un archivo .env en la raíz del proyecto basándote en el archivo .env.example:
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+VITE_API_URL=http://localhost:8080/api
 
-```bash
-ng generate --help
-```
 
-## Building
+## 📦 Instalación y Despliegue Local
 
-To build the project run:
+1. Clonar el repositorio:
+git clone https://github.com/tu-usuario/olimpiadas-cti-frontend.git
 
-```bash
-ng build
-```
+2. Navegar al directorio del proyecto:
+cd olimpiadas-cti-frontend
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+3. Instalar las dependencias de NPM:
+npm install
 
-## Running unit tests
+4. Levantar el servidor de desarrollo:
+npm run dev
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+> La aplicación estará disponible por defecto en http://localhost:5173.
 
-```bash
-ng test
-```
+## 🏗️ Comandos de Producción
 
-## Running end-to-end tests
+Para generar el empaquetado optimizado para despliegue en un servidor VPS (Nginx):
 
-For end-to-end (e2e) testing, run:
+# Generar la carpeta /dist optimizada
+npm run build
 
-```bash
-ng e2e
-```
+# Previsualizar el build en local
+npm run preview
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 📂 Estructura del Proyecto
 
-## Additional Resources
+src/
+ ├── assets/        # Imágenes, iconos y recursos estáticos
+ ├── components/    # Componentes reutilizables (Botones, Tarjetas, Navbar)
+ ├── pages/         # Vistas principales (Home, Cursos, Inscripción, Resultados)
+ ├── services/      # Lógica de conexión con la API (Axios interceptors)
+ ├── routes/        # Configuración de React Router
+ └── utils/         # Funciones y helpers de formateo
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-=======
-# frontend_administrable_olimpiadas_cti
->>>>>>> 0e0a549e22030ca6772846dd9a86c4eac23f2e74
+## 📄 Licencia
+Este proyecto es propiedad intelectual del Centro en Tecnologías de Información (CTI) - FISI - UNSM.
