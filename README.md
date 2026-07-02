@@ -1,4 +1,4 @@
-# 🏅 Olimpiadas Escolares CTI - Frontend Público
+Olimpiadas Escolares CTI - Panel Administrable
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
@@ -7,7 +7,7 @@
 
 Plataforma web pública desarrollada para el **Centro en Tecnologías de Información (CTI)** de la UNSM. Este sistema permite a los estudiantes y padres de familia visualizar los resultados de los colegios de procedencia, explorar el catálogo de cursos disponibles y realizar su proceso de inscripción de manera intuitiva y optimizada.
 
-## 🚀 Arquitectura y Tecnologías
+## Arquitectura y Tecnologías
 
 El proyecto está construido bajo una arquitectura de Single Page Application (SPA) para garantizar tiempos de respuesta mínimos.
 - Framework: React 19
@@ -17,7 +17,7 @@ El proyecto está construido bajo una arquitectura de Single Page Application (S
 - Peticiones HTTP: Axios (Integración con API REST Spring Boot)
 - Enrutamiento: React Router DOM v7
 
-## ⚙️ Prerrequisitos
+## Prerrequisitos
 
 Asegúrate de tener instalados los siguientes entornos en tu máquina local antes de levantar el proyecto:
 - Node.js (v18.0.0 o superior)
@@ -30,7 +30,7 @@ Antes de iniciar la aplicación, crea un archivo .env en la raíz del proyecto b
 VITE_API_URL=http://localhost:8080/api
 
 
-## 📦 Instalación y Despliegue Local
+## Instalación y Despliegue Local
 
 1. Clonar el repositorio:
 git clone https://github.com/tu-usuario/olimpiadas-cti-frontend.git
@@ -46,7 +46,7 @@ npm run dev
 
 > La aplicación estará disponible por defecto en http://localhost:5173.
 
-## 🏗️ Comandos de Producción
+## Comandos de Producción
 
 Para generar el empaquetado optimizado para despliegue en un servidor VPS (Nginx):
 
@@ -56,7 +56,7 @@ npm run build
 # Previsualizar el build en local
 npm run preview
 
-## 📂 Estructura del Proyecto
+## Estructura del Proyecto
 
 src/
  ├── assets/        # Imágenes, iconos y recursos estáticos
@@ -66,5 +66,5 @@ src/
  ├── routes/        # Configuración de React Router
  └── utils/         # Funciones y helpers de formateo
 
-## 📄 Licencia
+## Licencia
 Este proyecto es propiedad intelectual del Centro en Tecnologías de Información (CTI) - FISI - UNSM.
