@@ -9,13 +9,16 @@
     # --- STAGE 2: Servidor Nginx ---
     FROM nginx:alpine
     
-    # 1. Borramos los archivos por defecto de Nginx para que no estorben
+    # Borramos los archivos por defecto de Nginx
     RUN rm -rf /usr/share/nginx/html/*
     
-    # 2. Copiamos el contenido de la carpeta browser que genera Angular 21
-    COPY --from=build /app/dist/demo-frontend-olimpiadas/browser /usr/share/nginx/html
+    # Copiamos todo el dist temporalmente
+    COPY --from=build /app/dist /tmp/dist
     
-    # 3. Configuración de rutas
+    # TRUCO MÁGICO: Busca dónde está el index.html automáticamente y copia su contenido a Nginx
+    RUN cp -r $(dirname $(find /tmp/dist -name "index.html" | head -n 1))/* /usr/share/nginx/html/
+    
+    # Configuración de rutas
     RUN echo 'server { \
         listen 80; \
         location / { \
