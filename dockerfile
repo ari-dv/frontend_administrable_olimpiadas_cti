@@ -1,18 +1,21 @@
+# --- STAGE 1: Compilación ---
     FROM node:20-alpine AS build
     WORKDIR /app
-    
     COPY package*.json ./
     RUN npm install --legacy-peer-deps
-    
     COPY . .
-
-    RUN npm run build --configuration=production
+    RUN npm run build
     
-
+    # --- STAGE 2: Servidor Nginx ---
     FROM nginx:alpine
     
-    COPY --from=build /app/dist/demo-frontend-olimpiadas/ /usr/share/nginx/html
+    # 1. Borramos los archivos por defecto de Nginx para que no estorben
+    RUN rm -rf /usr/share/nginx/html/*
     
+    # 2. Copiamos el contenido de la carpeta browser que genera Angular 21
+    COPY --from=build /app/dist/demo-frontend-olimpiadas/browser /usr/share/nginx/html
+    
+    # 3. Configuración de rutas
     RUN echo 'server { \
         listen 80; \
         location / { \
