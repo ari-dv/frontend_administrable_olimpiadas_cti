@@ -11,7 +11,7 @@
 
     FROM nginx:alpine
     
-    COPY --from=build /app/dist/demo-frontend-olimpiadas/browser /usr/share/nginx/html
+    COPY --from=build /app/dist/demo-frontend-olimpiadas/ /usr/share/nginx/html
     
     RUN echo 'server { \
         listen 80; \
