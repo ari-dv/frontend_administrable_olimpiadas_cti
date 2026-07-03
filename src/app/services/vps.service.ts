@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class VpsService {
-  private vpsUrl = 'http://178.238.237.71:3001';
+  private vpsUrl = 'http://185.182.9.69:3001';
 
   constructor(private http: HttpClient) {}
 

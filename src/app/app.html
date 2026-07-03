@@ -1,9 +1,11 @@
 <div class="layout-wrapper" [class.menu-collapsed]="isMenuCollapsed">
   
+  <div class="sidebar-overlay" (click)="toggleMenu()"></div>
+
   <aside class="sidebar">
     <div class="logo">
-      <div class="logo-icon">M</div>
-      <span class="text">Olimpiadas CTI</span>
+      <img src="logo-olimpiadas.png" alt="CTI Logo" class="logo-img">
+      <i class="pi pi-times btn-close-sidebar" (click)="toggleMenu()"></i>
     </div>
     
     <nav class="menu">

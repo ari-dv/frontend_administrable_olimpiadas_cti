@@ -282,8 +282,8 @@ const doc = new Document({
         para('Desde el punto de vista funcional, el Panel Administrativo cumple los siguientes objetivos:'),
         bulletRich([bold('Administración del catálogo académico: '), normal('permite registrar, editar, activar/desactivar y eliminar cursos ofertados, incluyendo la asignación de nivel educativo (Primaria o Secundaria), periodo académico, precio de matrícula e imagen representativa.')]),
         bulletRich([bold('Gestión de grupos y horarios: '), normal('facilita la creación de grupos (aulas) vinculados a cada curso, definiendo los días de dictado, rango horario y capacidad máxima de vacantes para cada grupo.')]),
-        bulletRich([bold('Control de inscripciones y matrículas: '), normal('centraliza el proceso de matrícula de los postulantes, integrando validaciones de negocio tales como la verificación de inscripciones previas, el cálculo automático de descuentos por beca (Beca Completa al 100% o Semibeca al 50%) y la generación de comprobantes de matrícula en formato PDF.')]),
-        bulletRich([bold('Gestión de estudiantes: '), normal('administra el padrón de postulantes registrados con datos personales (DNI, nombres, apellidos, correo electrónico y teléfono), incluyendo la funcionalidad de autocompletado mediante consulta a la API de RENIEC.')]),
+        bulletRich([bold('Control de inscripciones y matrículas: '), normal('centraliza el proceso de matrícula de los estudiantes, integrando validaciones de negocio tales como la verificación de inscripciones previas, el cálculo automático de descuentos por beca (Beca Completa al 100% o Semibeca al 50%) y la generación de comprobantes de matrícula en formato PDF.')]),
+        bulletRich([bold('Gestión de estudiantes: '), normal('administra el padrón de estudiantes registrados con datos personales (DNI, nombres, apellidos, correo electrónico y teléfono), incluyendo la funcionalidad de autocompletado mediante consulta a la API de RENIEC.')]),
         bulletRich([bold('Seguimiento y reportería: '), normal('ofrece al administrador la capacidad de visualizar, filtrar y monitorear el consolidado de inscripciones agrupadas por estudiante y por curso, así como extraer el padrón de alumnos matriculados por grupo o aula específica.')]),
         blankLine(),
         para('El sistema opera bajo una arquitectura cliente-servidor desacoplada: el frontend, desarrollado en Angular 21 con renderizado del lado del servidor (SSR), consume una API REST implementada en Spring Boot (Java) expuesta en el puerto 8080. Este desacoplamiento garantiza la escalabilidad, mantenibilidad y la posibilidad de integrar futuros módulos (resultados de olimpiadas, notificaciones, reportes estadísticos) sin afectar la base existente.'),
@@ -388,7 +388,7 @@ const doc = new Document({
         }),
         new Paragraph({
           shading: { type: ShadingType.SOLID, color: LGRIS },
-          children: [new TextRun({ text: '    C -->|"Petición HTTP (GET/POST/PUT/DELETE)"| D["🌐 API REST Spring Boot (localhost:8080)"]', size: 18, font: 'Consolas', color: DARK })],
+          children: [new TextRun({ text: '    C -->|"Petición HTTP (GET/POST/PUT/DELETE)"| D["🌐 API REST Spring Boot (185.182.9.69:8080)"]', size: 18, font: 'Consolas', color: DARK })],
         }),
         new Paragraph({
           shading: { type: ShadingType.SOLID, color: LGRIS },
@@ -586,22 +586,22 @@ const doc = new Document({
 
         heading3('4.2.1. Visualizar el consolidado de inscripciones'),
         numberedStep(1, 'En el menú lateral, haga clic en la opción «Inscripciones».'),
-        numberedStep(2, 'Se desplegará la pantalla «Control de Inscripciones», la cual muestra una tabla consolidada donde cada fila representa a un postulante y los cursos en los que se encuentra inscrito.'),
+        numberedStep(2, 'Se desplegará la pantalla «Control de Inscripciones», la cual muestra una tabla consolidada donde cada fila representa a un estudiante y los cursos en los que se encuentra inscrito.'),
         numberedStep(3, 'La tabla presenta las siguientes columnas:'),
-        bulletRich([bold('Carnet: '), normal('fotografía del postulante (o un ícono genérico si aún no tiene foto asignada).')], 1),
+        bulletRich([bold('Carnet: '), normal('fotografía del estudiante (o un ícono genérico si aún no tiene foto asignada).')], 1),
         bulletRich([bold('DNI: '), normal('documento nacional de identidad del alumno.')], 1),
-        bulletRich([bold('Postulante: '), normal('apellidos y nombres completos.')], 1),
+        bulletRich([bold('estudiante: '), normal('apellidos y nombres completos.')], 1),
         bulletRich([bold('Cursos Asignados: '), normal('lista resumida de todos los cursos en los que el alumno está inscrito.')], 1),
         bulletRich([bold('Foto: '), normal('botón para actualizar la fotografía de carnet del alumno.')], 1),
         blankLine(),
 
         heading3('4.2.2. Buscar y filtrar inscripciones'),
-        numberedStep(1, 'Utilice la barra de búsqueda ubicada en la parte superior de la tabla para buscar por DNI, nombre o apellido del postulante. Los resultados se filtrarán en tiempo real a medida que escriba.'),
-        numberedStep(2, 'Utilice el selector de curso ubicado junto a la barra de búsqueda para mostrar únicamente los postulantes inscritos en un curso específico (por ejemplo: Aritmética). Para quitar el filtro, presione el ícono de limpieza (×) del selector.'),
+        numberedStep(1, 'Utilice la barra de búsqueda ubicada en la parte superior de la tabla para buscar por DNI, nombre o apellido del estudiante. Los resultados se filtrarán en tiempo real a medida que escriba.'),
+        numberedStep(2, 'Utilice el selector de curso ubicado junto a la barra de búsqueda para mostrar únicamente los estudiantes inscritos en un curso específico (por ejemplo: Aritmética). Para quitar el filtro, presione el ícono de limpieza (×) del selector.'),
         blankLine(),
 
-        heading3('4.2.3. Ver el detalle de inscripciones de un postulante'),
-        numberedStep(1, 'En la tabla principal, haga clic en el ícono de flecha (▶) ubicado al inicio de la fila del postulante.'),
+        heading3('4.2.3. Ver el detalle de inscripciones de un estudiante'),
+        numberedStep(1, 'En la tabla principal, haga clic en el ícono de flecha (▶) ubicado al inicio de la fila del estudiante.'),
         numberedStep(2, 'Se expandirá una sección inferior que muestra la tabla de detalle con la siguiente información por cada inscripción:'),
         bulletRich([bold('Fecha: '), normal('fecha en que se registró la inscripción (formato dd/mm/aaaa).')], 1),
         bulletRich([bold('Curso: '), normal('nombre del curso inscrito.')], 1),
@@ -610,7 +610,7 @@ const doc = new Document({
         blankLine(),
 
         heading3('4.2.4. Anular la inscripción de un alumno'),
-        numberedStep(1, 'Expanda la fila del postulante como se indica en el paso anterior.'),
+        numberedStep(1, 'Expanda la fila del estudiante como se indica en el paso anterior.'),
         numberedStep(2, 'En la tabla de detalle, localice la inscripción que desea anular.'),
         numberedStep(3, 'Presione el ícono de papelera (🗑️) en la columna correspondiente.'),
         numberedStep(4, 'El sistema le solicitará confirmación: «¿Anular esta inscripción? Se liberará la vacante.»'),
@@ -621,16 +621,16 @@ const doc = new Document({
         numberedStep(1, 'Desde la pantalla de Control de Inscripciones, presione el botón «Nueva Inscripción» (ícono +).'),
         numberedStep(2, 'El sistema mostrará un formulario guiado de tres pasos:'),
         blankLine(),
-        para('Paso 1 — Seleccionar Postulante:', { bold: true, color: AZUL }),
+        para('Paso 1 — Seleccionar estudiante:', { bold: true, color: AZUL }),
         bullet('En el desplegable de búsqueda, escriba el DNI o nombre del alumno. El sistema filtrará los resultados en tiempo real.', 1),
-        bullet('Seleccione al postulante. El sistema mostrará automáticamente el tipo de beca asignado al estudiante (si la tiene): Beca 100%, Semibeca 50% o Sin beca.', 1),
+        bullet('Seleccione al estudiante. El sistema mostrará automáticamente el tipo de beca asignado al estudiante (si la tiene): Beca 100%, Semibeca 50% o Sin beca.', 1),
         bullet('El sistema verificará en segundo plano si el alumno ya tiene inscripciones previas.', 1),
         blankLine(),
         para('Paso 2 — Seleccionar Curso y Horario:', { bold: true, color: AZUL }),
         bullet('En el segundo desplegable, escriba o busque el curso deseado. Al seleccionarlo, se mostrará la cantidad de horarios disponibles.', 1),
         bullet('Presione el botón «Ver horarios» para abrir la ventana de selección de horarios.', 1),
         bullet('Se desplegará un modal con la lista de horarios disponibles. Cada horario muestra: nombre del grupo, rango de horas y vacantes restantes.', 1),
-        bullet('Si el postulante ya está inscrito en un horario, se mostrará la etiqueta «Ya inscrito» y no podrá seleccionarlo nuevamente.', 1),
+        bullet('Si el estudiante ya está inscrito en un horario, se mostrará la etiqueta «Ya inscrito» y no podrá seleccionarlo nuevamente.', 1),
         bullet('Toque el horario deseado para seleccionarlo. El modal se cerrará automáticamente.', 1),
         blankLine(),
         para('Paso 3 — Resumen y Confirmación:', { bold: true, color: AZUL }),
@@ -641,8 +641,8 @@ const doc = new Document({
         numberedStep(3, 'El sistema procesará la matrícula y mostrará un mensaje de éxito con la opción de descargar el comprobante de matrícula en formato PDF.'),
         blankLine(),
 
-        heading3('4.2.6. Actualizar la foto de carnet de un postulante'),
-        numberedStep(1, 'En la tabla del consolidado de inscripciones, presione el botón «Cambiar» (ícono de cámara) en la columna Foto del postulante.'),
+        heading3('4.2.6. Actualizar la foto de carnet de un estudiante'),
+        numberedStep(1, 'En la tabla del consolidado de inscripciones, presione el botón «Cambiar» (ícono de cámara) en la columna Foto del estudiante.'),
         numberedStep(2, 'En la ventana emergente, puede subir una foto desde su computadora o pegar la URL de una imagen de internet.'),
         numberedStep(3, 'Se mostrará una vista previa de la imagen. Presione «Guardar Carnet» para confirmar.'),
         blankLine(),
@@ -659,7 +659,7 @@ const doc = new Document({
         numberedStepRich(5, [normal('Presione el ícono de '), bold('personas (👥)'), normal(' con la etiqueta «Ver inscritos» en la columna de acciones del grupo.')]),
         numberedStep(6, 'Se abrirá una nueva ventana emergente titulada «Lista de Alumnos», la cual presenta una tabla con las siguientes columnas:'),
         bulletRich([bold('DNI: '), normal('número de documento del alumno inscrito.')], 1),
-        bulletRich([bold('Postulante: '), normal('apellidos y nombres completos.')], 1),
+        bulletRich([bold('estudiante: '), normal('apellidos y nombres completos.')], 1),
         bulletRich([bold('Fecha de Inscripción: '), normal('fecha en que el alumno fue matriculado en dicho grupo (formato dd/mm/aaaa).')], 1),
         numberedStep(7, 'Si el grupo no tiene alumnos inscritos, se mostrará el mensaje: «Aún no hay alumnos inscritos en este horario.»'),
         blankLine(),
@@ -767,15 +767,15 @@ const doc = new Document({
         ),
         ...capturaPlaceholder(
           'B.5. Módulo de Cursos — Lista de Alumnos por Grupo',
-          'Captura del modal Lista de Alumnos desplegado tras presionar el botón «Ver inscritos» de un grupo. Debe mostrar al menos 2 registros con columnas DNI, postulante y fecha de inscripción.'
+          'Captura del modal Lista de Alumnos desplegado tras presionar el botón «Ver inscritos» de un grupo. Debe mostrar al menos 2 registros con columnas DNI, estudiante y fecha de inscripción.'
         ),
         ...capturaPlaceholder(
-          'B.6. Módulo de Inscripciones — Consolidado de Postulantes',
-          'Captura de la pantalla de Control de Inscripciones (/inscripciones) mostrando la tabla consolidada con al menos 3 postulantes registrados. Debe visualizarse la barra de búsqueda, el filtro por curso y las columnas de carnet, DNI, postulante, cursos asignados y botón de foto. Incluir al menos una fila expandida.'
+          'B.6. Módulo de Inscripciones — Consolidado de estudiantes',
+          'Captura de la pantalla de Control de Inscripciones (/inscripciones) mostrando la tabla consolidada con al menos 3 estudiantes registrados. Debe visualizarse la barra de búsqueda, el filtro por curso y las columnas de carnet, DNI, estudiante, cursos asignados y botón de foto. Incluir al menos una fila expandida.'
         ),
         ...capturaPlaceholder(
           'B.7. Módulo de Inscripciones — Formulario de Nueva Inscripción',
-          'Captura del formulario guiado de nueva inscripción mostrando los tres pasos (Postulante, Curso y horario, Resumen) con datos de ejemplo seleccionados. De preferencia, mostrar un caso con descuento por beca para evidenciar el cálculo automático.'
+          'Captura del formulario guiado de nueva inscripción mostrando los tres pasos (estudiante, Curso y horario, Resumen) con datos de ejemplo seleccionados. De preferencia, mostrar un caso con descuento por beca para evidenciar el cálculo automático.'
         ),
         ...capturaPlaceholder(
           'B.8. Módulo de Inscripciones — Modal de Selección de Horarios',

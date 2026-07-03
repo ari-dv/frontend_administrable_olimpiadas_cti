@@ -2,7 +2,7 @@
   <div class="page-header">
     <div class="header-titles">
       <h1>Control de Inscripciones</h1>
-      <p>Consolidado de postulantes registrados y asignación de fotochecks.</p>
+      <p>Consolidado de estudiantes registrados y asignación de fotochecks.</p>
     </div>
     <p-button label="Nueva Inscripción" icon="pi pi-plus" styleClass="btn-nuevo" (onClick)="mostrarFormularioNuevo = true"></p-button>
   </div>
@@ -11,25 +11,26 @@
     <div class="tabla-toolbar">
       <p-iconField iconPosition="left" class="campo-busqueda">
         <p-inputIcon styleClass="pi pi-search" />
-        <input type="text" pInputText placeholder="Buscar postulante registrado..." class="input-search-full" (input)="dtInscripciones.filterGlobal($any($event.target).value, 'contains')" />
+        <input type="text" pInputText placeholder="Buscar estudiante registrado..." class="input-search-full" (input)="dtInscripciones.filterGlobal($any($event.target).value, 'contains')" />
       </p-iconField>
 
       <p-select [options]="cursosFiltro" placeholder="Todos los cursos" optionLabel="label" optionValue="value" [showClear]="true" (onChange)="dtInscripciones.filter($event.value, 'cursosResumen', 'contains')" styleClass="campo-filtro" appendTo="body"></p-select>
     </div>
 
     <p-table #dtInscripciones 
-             [value]="listaAgregadaPostulantes" 
+             [value]="listaAgregadaestudiantes" 
              [globalFilterFields]="['estudiante.dni', 'estudiante.names', 'estudiante.lastNames', 'cursosResumen']" 
              [loading]="cargando" 
              styleClass="p-datatable-sm"
-             responsiveLayout="scroll">
+             responsiveLayout="stack" breakpoint="768px"
+             [paginator]="true" [rows]="filasPorPagina" [rowsPerPageOptions]="[3, 5, 10, 25]">
       
       <ng-template pTemplate="header">
         <tr>
           <th class="col-icono"></th>
           <th class="col-carnet">CARNET</th>
           <th class="col-dni">DNI</th>
-          <th class="col-postulante">POSTULANTE</th>
+          <th class="col-estudiante">ESTUDIANTE</th>
           <th class="col-cursos">CURSOS ASIGNADOS</th>
           <th class="col-acciones">FOTO</th>
         </tr>
@@ -38,6 +39,7 @@
       <ng-template pTemplate="body" let-row>
         <tr>
           <td>
+            <span class="p-column-title">Detalles</span>
             <p-button 
               [icon]="filasExpandidas[row.llaveFila] ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" 
               [text]="true" [rounded]="true" severity="secondary" 
@@ -45,21 +47,30 @@
             </p-button>
           </td>
           <td>
+            <span class="p-column-title">Carnet</span>
             @if (row.estudiante.imagePath) {
               <img [src]="row.estudiante.imagePath" alt="Carnet" class="img-carnet" />
             } @else {
               <div class="img-placeholder-carnet"><i class="pi pi-user"></i></div>
             }
           </td>
-          <td class="td-dni">{{ row.estudiante.dni }}</td>
-          <td>{{ row.estudiante.lastNames }}, {{ row.estudiante.names }}</td>
+          <td class="td-dni">
+            <span class="p-column-title">DNI</span>
+            {{ row.estudiante.dni }}
+          </td>
           <td>
+            <span class="p-column-title">Estudiante</span>
+            {{ row.estudiante.lastNames }}, {{ row.estudiante.names }}
+          </td>
+          <td>
+            <span class="p-column-title">Cursos Asignados</span>
             <div class="cursos-asignados-badge">
               <i class="pi pi-book"></i>
               <span>{{ row.cursosResumen }}</span>
             </div>
           </td>
           <td class="col-acciones">
+            <span class="p-column-title">Foto</span>
             <p-button icon="pi pi-camera" label="Cambiar" size="small" [outlined]="true" severity="secondary" (onClick)="abrirModalFoto(row.estudiante)"></p-button>
           </td>
         </tr>
@@ -74,7 +85,7 @@
                 </div>
                 
                 <div class="table-responsive-container">
-                  <p-table [value]="row.detalles" styleClass="p-datatable-sm tabla-interna-card" responsiveLayout="scroll">
+                  <p-table [value]="row.detalles" styleClass="p-datatable-sm tabla-interna-card" responsiveLayout="stack" breakpoint="768px">
                     <ng-template pTemplate="header">
                       <tr>
                         <th class="col-fecha">FECHA</th>
@@ -85,12 +96,20 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-detalle>
                       <tr>
-                        <td>{{ detalle.enrollmentDate | date:'dd/MM/yyyy' }}</td>
-                        <td class="td-curso-interno">{{ detalle.grupo?.curso?.title }}</td>
                         <td>
+                          <span class="p-column-title">Fecha</span>
+                          {{ detalle.enrollmentDate | date:'dd/MM/yyyy' }}
+                        </td>
+                        <td class="td-curso-interno">
+                          <span class="p-column-title">Curso</span>
+                          {{ detalle.grupo?.curso?.title }}
+                        </td>
+                        <td>
+                          <span class="p-column-title">Grupo</span>
                           <span class="badge-grupo-interno">{{ detalle.grupo?.name }}</span>
                         </td>
                         <td class="col-eliminar">
+                          <span class="p-column-title">Anular</span>
                           <p-button icon="pi pi-trash" [text]="true" severity="danger" (onClick)="confirmarAnularInscripcion(detalle.id)"></p-button>
                         </td>
                       </tr>
@@ -105,26 +124,29 @@
 
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="tabla-vacia">No hay postulantes inscritos en el sistema actualmente.</td>
+          <td colspan="6" class="tabla-vacia">No hay estudiantes inscritos en el sistema actualmente.</td>
         </tr>
       </ng-template>
     </p-table>
   </div>
 
-  <p-dialog header="Actualizar Foto de Carnet" [(visible)]="mostrarModalFoto" [modal]="true" [style]="{ width: '90vw', maxWidth: '450px' }" [draggable]="false" [resizable]="false">
+  <p-dialog header="Actualizar Foto" [(visible)]="mostrarModalFoto" [modal]="true" [style]="{ width: '500px' }" [draggable]="false" [resizable]="false">
     <form [formGroup]="fotoForm" class="form-modal-foto">
       
-      <div class="box-upload-pc">
-        <label>Subir desde la PC:</label>
-        <input type="file" accept="image/*" (change)="onFotoSeleccionada($event)" class="input-file-custom" />
+      <div class="upload-area">
+        <label for="fileUpload" class="upload-label">
+          <i class="pi pi-upload upload-icon"></i>
+          <span>Haz clic para seleccionar foto</span>
+        </label>
+        <input id="fileUpload" type="file" accept="image/*" (change)="onFotoSeleccionada($event)" class="hidden-input" />
       </div>
 
-      <div class="box-upload-url">
-        <label>O pegar enlace de internet (URL):</label>
-        <input pInputText formControlName="imagePath" placeholder="https://..." class="w-full input-url" />
-      </div>
-
-      @if (fotoForm.value.imagePath) {
+      @if (cargandoFoto) {
+        <div class="loading-container">
+          <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #0ea5e9;"></i>
+          <p>Cargando vista previa...</p>
+        </div>
+      } @else if (fotoForm.value.imagePath) {
         <div class="preview-container">
           <img [src]="fotoForm.value.imagePath" alt="Previsualización" class="img-preview" />
         </div>
@@ -133,7 +155,7 @@
     
     <ng-template pTemplate="footer">
       <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="mostrarModalFoto = false"></p-button>
-      <p-button label="Guardar Carnet" icon="pi pi-save" (onClick)="guardarFotoCarnet()" styleClass="btn-guardar" [disabled]="fotoForm.invalid"></p-button>
+      <p-button label="Guardar" icon="pi pi-save" (onClick)="guardarFotoCarnet()" styleClass="btn-guardar" [disabled]="fotoForm.invalid || cargandoFoto"></p-button>
     </ng-template>
   </p-dialog>
 

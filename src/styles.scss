@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════
 
 // ── Tipografía ──────────────────────────────────────────────────────
-$font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$font: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
 // ── Paleta de colores ───────────────────────────────────────────────
 $primary-50:  #eff6ff;
@@ -35,18 +35,18 @@ $amber-500:   #f59e0b;
 $white: #ffffff;
 $bg-body: #f4f6fb;
 
-// ── Sombras ─────────────────────────────────────────────────────────
-$shadow-xs:   0 1px 2px rgba(0,0,0,.04);
-$shadow-sm:   0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-$shadow-md:   0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05);
-$shadow-lg:   0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -4px rgba(0,0,0,.04);
-$shadow-card: 0 0 0 1px rgba(0,0,0,.03), 0 1px 3px rgba(0,0,0,.06);
+// ── Sombras Premium ───────────────────────────────────────────────────
+$shadow-xs:   0 1px 2px rgba(15, 23, 42, 0.04);
+$shadow-sm:   0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+$shadow-md:   0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+$shadow-lg:   0 20px 35px -5px rgba(15, 23, 42, 0.05), 0 10px 15px -5px rgba(15, 23, 42, 0.02);
+$shadow-card: 0 0 0 1px rgba(15, 23, 42, 0.03), 0 4px 12px rgba(15, 23, 42, 0.03);
 
 // ── Radios ──────────────────────────────────────────────────────────
 $radius-sm:  8px;
 $radius-md:  12px;
 $radius-lg:  16px;
-$radius-xl:  20px;
+$radius-xl:  24px;
 
 // ── Transiciones ────────────────────────────────────────────────────
 $transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -108,6 +108,12 @@ body {
   font-weight: 600 !important;
   border-radius: $radius-sm !important;
   transition: $transition-fast !important;
+  box-shadow: $shadow-xs !important;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: $shadow-sm !important;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -157,4 +163,62 @@ body {
   background: $slate-300;
   border-radius: 10px;
   &:hover { background: $slate-400; }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  RESPONSIVE CARDS (TABLES ON MOBILE)
+// ═══════════════════════════════════════════════════════════════════
+
+// Por defecto en escritorio, ocultamos las etiquetas de las columnas
+.p-datatable .p-datatable-tbody > tr > td .p-column-title {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .p-datatable.p-datatable-stacked .p-datatable-tbody > tr {
+    display: block;
+    margin-bottom: 1rem !important; 
+    background: $white;
+    border-radius: $radius-md;
+    box-shadow: $shadow-card !important; 
+    border: 1px solid $slate-200 !important; 
+    overflow: hidden;
+
+    > td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 1rem !important; 
+      border: none !important;
+      border-bottom: 1px solid $slate-100 !important;
+      font-size: 0.9rem;
+
+      &:last-child {
+        border-bottom: none !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+      }
+
+      .p-column-title {
+        display: block !important;
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: $slate-500;
+        margin-right: 1rem;
+        flex-shrink: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      // Aseguramos que el contenido principal se alinee a la derecha si es texto corto
+      > *:not(.p-column-title) {
+        text-align: right;
+      }
+    }
+  }
+
+  // Hide traditional headers when stacked
+  .p-datatable.p-datatable-stacked .p-datatable-thead > tr > th {
+    display: none !important;
+  }
 }

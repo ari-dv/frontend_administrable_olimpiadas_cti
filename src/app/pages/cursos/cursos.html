@@ -7,14 +7,21 @@
 </div>
 
 <div class="card-tabla">
-  <div class="tabla-toolbar">
+  <div class="tabla-toolbar" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
     <p-iconField iconPosition="left">
       <p-inputIcon styleClass="pi pi-search" />
       <input type="text" pInputText placeholder="Buscar curso..." class="input-buscar" (input)="dtCursos.filterGlobal($any($event.target).value, 'contains')" />
     </p-iconField>
+    <p-select 
+      [options]="niveles" 
+      placeholder="Todos los niveles" 
+      (onChange)="dtCursos.filter($event.value, 'level', 'equals')" 
+      [showClear]="true" 
+      styleClass="w-full sm:w-14rem"
+    ></p-select>
   </div>
 
-  <p-table #dtCursos [value]="listaCursos" [globalFilterFields]="['title', 'level']" [loading]="cargando" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '60rem' }">
+  <p-table #dtCursos [value]="listaCursos" [globalFilterFields]="['title', 'level']" [loading]="cargando" styleClass="p-datatable-sm" responsiveLayout="stack" breakpoint="768px" [paginator]="true" [rows]="filasPorPagina" [rowsPerPageOptions]="[3, 5, 10, 25]">
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 4rem">IMG</th>
@@ -22,7 +29,6 @@
         <th>NIVEL</th>
         <th>PERIODO</th> 
         <th>PRECIO</th>
-        <th>ESTADO</th>
         <th class="col-acciones">ACCIONES</th>
       </tr>
     </ng-template>
@@ -30,31 +36,34 @@
     <ng-template pTemplate="body" let-curso>
       <tr>
         <td>
+          <span class="p-column-title">Imagen</span>
           @if (curso.imagePath) {
             <img [src]="curso.imagePath" alt="Curso" class="img-curso" />
           } @else {
             <div class="img-placeholder"><i class="pi pi-image"></i></div>
           }
         </td>
-        <td style="font-weight: 500;">{{ curso.title }}</td>
-        <td>{{ curso.level }}</td>
+        <td style="font-weight: 500;">
+          <span class="p-column-title">Nombre</span>
+          {{ curso.title }}
+        </td>
         <td>
+          <span class="p-column-title">Nivel</span>
+          {{ curso.level }}
+        </td>
+        <td>
+          <span class="p-column-title">Periodo</span>
           <span class="badge-periodo">{{ curso.period }}</span>
         </td>
-        <td>S/ {{ curso.price }}</td>
         <td>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <p-toggleSwitch [(ngModel)]="curso.isActive" (onChange)="cambiarEstado(curso)"></p-toggleSwitch>
-            <span style="font-size: 0.85rem; font-weight: 500;" [style.color]="curso.isActive ? '#0f172a' : '#94a3b8'">
-              {{ curso.isActive ? 'Activo' : 'Inactivo' }}
-            </span>
-          </div>
+          <span class="p-column-title">Precio</span>
+          S/ {{ curso.price }}
         </td>
         <td class="col-acciones">
-          <div style="display: flex; gap: 4px; justify-content: flex-end;">
+          <span class="p-column-title">Acciones</span>
+          <div style="display: flex; gap: 4px; justify-content: flex-start;">
             <p-button label="Horarios" icon="pi pi-calendar" size="small" severity="info" [outlined]="true" (onClick)="abrirModalHorarios(curso)"></p-button>
             <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" severity="secondary" pTooltip="Editar" tooltipPosition="top" (onClick)="abrirModalEditar(curso)"></p-button>
-            <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" pTooltip="Eliminar" tooltipPosition="top" (onClick)="confirmarEliminar(curso.id)"></p-button>
           </div>
         </td>
       </tr>
@@ -121,7 +130,10 @@
           @if (cursoForm.get('price')?.invalid && cursoForm.get('price')?.touched) {
             <small class="error-text">El precio es obligatorio.</small>
           }
-
+        </div>
+        <div class="campo" style="display: flex; align-items: center; gap: 10px; margin-top: 25px;">
+          <p-toggleSwitch formControlName="isActive" (onChange)="onCambioEstadoToggle()"></p-toggleSwitch>
+          <label style="margin-bottom: 0;">Curso Activo</label>
         </div>
       </div>
     </div>
@@ -179,7 +191,7 @@
       <span>Horarios Disponibles</span>
     </div>
 
-    <p-table [value]="listaHorarios" styleClass="p-datatable-sm tabla-interna-card" [tableStyle]="{ 'min-width': '40rem' }" [responsiveLayout]="'scroll'">
+    <p-table [value]="listaHorarios" styleClass="p-datatable-sm tabla-interna-card" responsiveLayout="stack" breakpoint="768px" [paginator]="true" [rows]="filasPorPagina" [rowsPerPageOptions]="[3, 5, 10, 25]">
       <ng-template pTemplate="header">
         <tr>
           <th>GRUPO</th>
@@ -192,18 +204,25 @@
       
       <ng-template pTemplate="body" let-horario>
         <tr>
-          <td style="font-weight: 600; color: #0f172a;">{{ horario.name }}</td>
+          <td style="font-weight: 600; color: #0f172a;">
+            <span class="p-column-title">Grupo</span>
+            {{ horario.name }}
+          </td>
           <td style="font-size: 0.85rem; color: #475569;">
+            <span class="p-column-title">Días</span>
             <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px;">{{ horario.days }}</span>
           </td>
           <td style="font-size: 0.85rem; font-weight: 600; color: #0284c7;">
+            <span class="p-column-title">Horas</span>
             <i class="pi pi-clock" style="margin-right: 4px;"></i>
             {{ horario.startTime | slice:0:5 }} - {{ horario.endTime | slice:0:5 }}
           </td>
           <td style="text-align: center;">
+            <span class="p-column-title">Vacantes</span>
             <p-tag [value]="horario.capacity" severity="success" [rounded]="true" styleClass="tag-vacantes"></p-tag>
           </td>
           <td style="text-align: right;">
+            <span class="p-column-title">Acciones</span>
             <div style="display: flex; gap: 4px; justify-content: flex-end;">
               <p-button icon="pi pi-users" [text]="true" [rounded]="true" severity="info" pTooltip="Ver inscritos" tooltipPosition="top" (onClick)="verAlumnosDelGrupo(horario.id)"></p-button>
               <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" pTooltip="Eliminar" tooltipPosition="top" (onClick)="eliminarHorario(horario.id)"></p-button>
@@ -224,20 +243,29 @@
 </p-dialog>
 
 <p-dialog header="Lista de Alumnos" [(visible)]="mostrarModalAlumnos" [modal]="true" [style]="{ width: '90vw', maxWidth: '550px' }" [draggable]="false" [resizable]="false" appendTo="body">
-  <p-table [value]="listaAlumnosGrupo" styleClass="p-datatable-sm card-tabla" [responsiveLayout]="'scroll'">
+  <p-table [value]="listaAlumnosGrupo" styleClass="p-datatable-sm card-tabla" responsiveLayout="stack" breakpoint="768px" [paginator]="true" [rows]="filasPorPagina" [rowsPerPageOptions]="[3, 5, 10, 25]">
     <ng-template pTemplate="header">
       <tr>
         <th>DNI</th>
-        <th>POSTULANTE</th>
+        <th>ESTUDIANTE</th>
         <th>FECHA INSCRIPCIÓN</th>
       </tr>
     </ng-template>
     
     <ng-template pTemplate="body" let-inscripcion>
       <tr>
-        <td style="font-weight: 600; color: #64748b;">{{ inscripcion.estudiante?.dni }}</td>
-        <td style="font-weight: 500;">{{ inscripcion.estudiante?.lastNames }}, {{ inscripcion.estudiante?.names }}</td>
-        <td style="color: #64748b; font-size: 0.85rem;">{{ inscripcion.enrollmentDate | date:'dd/MM/yyyy' }}</td>
+        <td style="font-weight: 600; color: #64748b;">
+          <span class="p-column-title">DNI</span>
+          {{ inscripcion.estudiante?.dni }}
+        </td>
+        <td style="font-weight: 500;">
+          <span class="p-column-title">Estudiante</span>
+          {{ inscripcion.estudiante?.lastNames }}, {{ inscripcion.estudiante?.names }}
+        </td>
+        <td style="color: #64748b; font-size: 0.85rem;">
+          <span class="p-column-title">Fecha Inscr.</span>
+          {{ inscripcion.enrollmentDate | date:'dd/MM/yyyy' }}
+        </td>
       </tr>
     </ng-template>
 

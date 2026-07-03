@@ -11,7 +11,7 @@
   </p-button>
   <div>
     <h2>Registrar matrícula</h2>
-    <p>Selecciona al postulante y el horario a inscribir.</p>
+    <p>Selecciona al estudiante y el horario a inscribir.</p>
   </div>
 </div>
 
@@ -41,13 +41,15 @@
 
   <div class="pasos-grid">
 
-    <!-- ── PASO 1: Postulante ───────────────────────────────────── -->
+    <!-- COLUMNA IZQUIERDA (Pasos 1 y 2) -->
+    <div class="columna-izquierda">
+      <!-- ── PASO 1: estudiante ───────────────────────────────────── -->
     <div class="card-paso" [class.paso-activo]="!!estudianteSeleccionadoId">
       <div class="paso-header">
         <div class="paso-numero" [class.completado]="!!estudianteSeleccionadoId">
           @if (estudianteSeleccionadoId) { <i class="pi pi-check"></i> } @else { 1 }
         </div>
-        <h3>Postulante</h3>
+        <h3>estudiante</h3>
       </div>
 
       <p-select
@@ -136,12 +138,15 @@
       @if (errorInscripcionPrevia) {
         <div class="alert-inline alert-error-inline">
           <i class="pi pi-exclamation-triangle"></i>
-          El postulante ya está inscrito en ese horario.
+          El estudiante ya está inscrito en ese horario.
         </div>
       }
-    </div>
+    </div><!-- /card-paso -->
+    </div><!-- /columna-izquierda -->
 
-    <!-- ── PASO 3: Resumen ──────────────────────────────────────── -->
+    <!-- COLUMNA DERECHA (Paso 3) -->
+    <div class="columna-derecha">
+      <!-- ── PASO 3: Resumen ──────────────────────────────────────── -->
     <div class="card-paso" [class.paso-activo]="puedeConfirmar">
       <div class="paso-header">
         <div class="paso-numero" [class.completado]="puedeConfirmar">
@@ -182,12 +187,14 @@
             </div>
           }
 
-          <div class="resumen-fila">
-            <span class="resumen-label">Emisión de Certificado</span>
-            <span class="resumen-valor" style="color: #0ea5e9; font-weight: 600;">
-              S/ {{ costoCertificado.toFixed(2) }}
-            </span>
-          </div>
+          @if (costoCertificado > 0) {
+            <div class="resumen-fila">
+              <span class="resumen-label">Emisión de Certificado</span>
+              <span class="resumen-valor" style="color: #0ea5e9; font-weight: 600;">
+                S/ {{ costoCertificado.toFixed(2) }}
+              </span>
+            </div>
+          }
 
           <div class="resumen-total-row">
             <span class="resumen-total-label">Total a pagar</span>
@@ -214,7 +221,8 @@
         [disabled]="!puedeConfirmar"
         (onClick)="guardarInscripcion()">
       </p-button>
-    </div>
+    </div><!-- /card-paso -->
+    </div><!-- /columna-derecha -->
 
   </div><!-- /pasos-grid -->
 
@@ -255,7 +263,7 @@
     @if (!estudianteSeleccionadoId) {
       <div class="alert-inline alert-warn-inline mb-modal">
         <i class="pi pi-info-circle"></i>
-        Selecciona un postulante primero para validar inscripciones previas.
+        Selecciona un estudiante primero para validar inscripciones previas.
       </div>
     }
 

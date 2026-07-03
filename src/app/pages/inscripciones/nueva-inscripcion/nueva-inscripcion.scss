@@ -23,8 +23,8 @@ $white:      #ffffff;
 $radius-sm:  8px;
 $radius-md:  12px;
 $radius-lg:  16px;
-$shadow-sm:  0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-$shadow-md:  0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -1px rgba(0,0,0,.04);
+$shadow-sm:  0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+$shadow-md:  0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
 
 // ═══════════════════════════════════════════════════════════════════
 //  FIX: PrimeNG p-select — truncar texto largo dentro del campo
@@ -36,12 +36,14 @@ p-select.w-full .p-select {
 }
 
 p-select .p-select-label {
-  overflow:      hidden;
-  text-overflow: ellipsis;
-  white-space:   nowrap;
+  overflow:      visible;
+  white-space:   normal;
   min-width:     0;
   flex:          1;
   display:       block;
+  line-height:   1.4;
+  padding-top:   8px;
+  padding-bottom: 8px;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -117,12 +119,22 @@ p-select .p-select-label {
 // ═══════════════════════════════════════════════════════════════════
 .pasos-grid {
   display:               grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)); // minmax(0) evita desborde
-  gap:                   16px;
+  grid-template-columns: 1.8fr 1fr; // 2 columns: ~65% left, ~35% right
+  gap:                   20px;
   align-items:           start;
 
-  @media (max-width: 900px) { grid-template-columns: 1fr 1fr; }
-  @media (max-width: 560px) { grid-template-columns: 1fr; }
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.columna-izquierda {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.columna-derecha {
+  position: sticky;
+  top: 90px; // keeps summary visible when scrolling
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -130,16 +142,20 @@ p-select .p-select-label {
 // ═══════════════════════════════════════════════════════════════════
 .card-paso {
   background:    $white;
-  border:        1.5px solid $slate-200;
+  border:        1px solid transparent;
   border-radius: $radius-lg;
-  padding:       20px;
-  box-shadow:    $shadow-sm;
-  transition:    border-color .2s, box-shadow .2s;
+  padding:       24px;
+  box-shadow:    $shadow-md;
+  transition:    border-color .3s, box-shadow .3s, transform .2s;
   min-width:     0; // previene desborde en grid
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 
   &.paso-activo {
     border-color: $azul;
-    box-shadow:   0 0 0 3px rgba($azul, .07), $shadow-md;
+    box-shadow:   0 0 0 4px rgba($azul, .08), $shadow-md;
   }
 }
 
@@ -537,6 +553,7 @@ p-select .p-select-label {
     border-color: $azul;
     background:   $azul-light;
     box-shadow:   0 0 0 3px rgba($azul, .1);
+    transform:    translateY(-1px);
   }
 
   &.ya-inscrito {
@@ -616,9 +633,7 @@ p-select .p-select-label {
 //  RESPONSIVE
 // ═══════════════════════════════════════════════════════════════════
 @media (max-width: 900px) {
-  .pasos-grid .card-paso:last-child {
-    grid-column: 1 / -1;
-  }
+  .columna-derecha { position: static; }
 }
 
 @media (max-width: 560px) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -49,6 +49,12 @@ export class CursosComponent implements OnInit {
   listaHorarios: any[] = [];
   archivoSeleccionado: File | null = null;
   vistaPrevia: string | ArrayBuffer | null = null;
+  filasPorPagina: number = window.innerWidth < 768 ? 3 : 10;
+
+  @HostListener('window:resize')
+  onResize() {
+    this.filasPorPagina = window.innerWidth < 768 ? 3 : 10;
+  }
 
   niveles = [
     { label: 'Primaria', value: 'Primaria' },
@@ -79,7 +85,8 @@ export class CursosComponent implements OnInit {
       level: ['', Validators.required],
       price: [null, [Validators.required, Validators.min(0)]],
       period: ['', Validators.required],
-      imagePath: ['']
+      imagePath: [''],
+      isActive: [true]
     });
 
     this.horarioForm = this.fb.group({
@@ -123,7 +130,7 @@ export class CursosComponent implements OnInit {
     this.cursoIdSeleccionado = null;
     this.archivoSeleccionado = null;
     this.vistaPrevia = null;
-    this.cursoForm.reset({ price: null, imagePath: '' });
+    this.cursoForm.reset({ price: null, imagePath: '', isActive: true });
     this.mostrarModal = true;
   }
 
@@ -137,7 +144,8 @@ export class CursosComponent implements OnInit {
       level: curso.level,
       price: curso.price,
       period: curso.period || '', 
-      imagePath: curso.imagePath || ''
+      imagePath: curso.imagePath || '',
+      isActive: curso.isActive !== false
     });
     this.mostrarModal = true;
   }
@@ -182,7 +190,6 @@ export class CursosComponent implements OnInit {
   enviarDatosASpring() {
     const datosCurso = this.cursoForm.value;
     datosCurso.slug = datosCurso.title.toLowerCase().replace(/\s+/g, '-');
-    datosCurso.isActive = true;
 
     if (this.editando && this.cursoIdSeleccionado) {
       this.cursosService.actualizarCurso(this.cursoIdSeleccionado, datosCurso).subscribe({
@@ -237,9 +244,8 @@ export class CursosComponent implements OnInit {
     });
   }
 
-  cambiarEstado(curso: any) {
-    const nuevoEstado = curso.isActive;
-    curso.isActive = !nuevoEstado; // Revertir visualmente temporalmente
+  onCambioEstadoToggle() {
+    const nuevoEstado = this.cursoForm.value.isActive;
 
     Swal.fire({
       title: nuevoEstado ? '¿Activar curso?' : '¿Desactivar curso?',
@@ -251,17 +257,9 @@ export class CursosComponent implements OnInit {
       confirmButtonText: 'Sí, cambiar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-      if (result.isConfirmed) {
-        curso.isActive = nuevoEstado; // Aplicar visualmente
-        this.cursosService.actualizarCurso(curso.id, curso).subscribe({
-          next: () => {
-            Swal.fire({ icon: 'success', title: 'Estado actualizado', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
-          },
-          error: (err) => {
-            curso.isActive = !nuevoEstado; // Revertir si falla
-            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo comunicar con el servidor.' });
-          }
-        });
+      if (!result.isConfirmed) {
+        // Revertimos el switch en el formulario si cancela
+        this.cursoForm.patchValue({ isActive: !nuevoEstado });
       }
     });
   }
@@ -313,13 +311,29 @@ export class CursosComponent implements OnInit {
       error: (err) => console.error('Error al guardar horario', err)
     });
   }
-
   eliminarHorario(id: number) {
-    this.gruposService.eliminarGrupo(id).subscribe({
-      next: () => {
-        this.cargarHorariosDelCurso(this.cursoSeleccionadoParaHorarios.id);
-      },
-      error: (err) => console.error('Error al eliminar horario', err)
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción eliminará el horario de forma permanente.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.gruposService.eliminarGrupo(id).subscribe({
+          next: () => {
+            this.cargarHorariosDelCurso(this.cursoSeleccionadoParaHorarios.id);
+            Swal.fire({ icon: 'success', title: '¡Eliminado!', text: 'El horario ha sido removido.', timer: 1500, showConfirmButton: false });
+          },
+          error: (err) => {
+            console.error('Error al eliminar horario', err);
+            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo eliminar el horario. Verifica si tiene alumnos inscritos.' });
+          }
+        });
+      }
     });
   }
 

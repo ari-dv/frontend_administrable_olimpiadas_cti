@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -28,13 +28,20 @@ import { NuevaInscripcionComponent } from './nueva-inscripcion/nueva-inscripcion
   styleUrls: ['./inscripciones.scss']
 })
 export class InscripcionesComponent implements OnInit {
-  listaAgregadaPostulantes: any[] = []; 
+  listaAgregadaestudiantes: any[] = []; 
   cargando: boolean = true;
   mostrarFormularioNuevo: boolean = false; 
   cursosFiltro: any[] = [];
   mostrarModalFoto: boolean = false;
   fotoForm: FormGroup;
   alumnoSeleccionadoParaFoto: any = null;
+  cargandoFoto: boolean = false;
+  filasPorPagina: number = window.innerWidth < 768 ? 3 : 10;
+
+  @HostListener('window:resize')
+  onResize() {
+    this.filasPorPagina = window.innerWidth < 768 ? 3 : 10;
+  }
 
   // Lógica manual que te funciona bien
   filasExpandidas: { [key: string]: boolean } = {};
@@ -60,7 +67,7 @@ export class InscripcionesComponent implements OnInit {
     this.inscripcionesService.listarInscripciones().subscribe({
       next: (datos: any) => {
         const inscripcionesRaw = datos.content ? datos.content : datos;
-        this.listaAgregadaPostulantes = this.agruparInscripciones(inscripcionesRaw);
+        this.listaAgregadaestudiantes = this.agruparInscripciones(inscripcionesRaw);
         this.cargando = false;
         this.cdr.detectChanges();
       },
@@ -138,9 +145,14 @@ export class InscripcionesComponent implements OnInit {
   onFotoSeleccionada(event: any) {
     const file = event.target.files[0];
     if (file) {
+      this.cargandoFoto = true;
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.fotoForm.patchValue({ imagePath: e.target.result });
+        setTimeout(() => {
+          this.fotoForm.patchValue({ imagePath: e.target.result });
+          this.cargandoFoto = false;
+          this.cdr.detectChanges();
+        }, 600);
       };
       reader.readAsDataURL(file);
     }

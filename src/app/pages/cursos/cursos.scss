@@ -26,8 +26,9 @@
      ========================================= */
   .card-tabla {
     background: white;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.02);
     overflow: hidden;
   
     .tabla-toolbar {
@@ -43,17 +44,118 @@
   
     ::ng-deep {
       .p-datatable .p-datatable-thead > tr > th { 
-        background-color: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; padding: 1rem 1.5rem; white-space: nowrap;
+        background-color: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; padding: 1.2rem 1.5rem; white-space: nowrap; border-bottom: 1px solid #e2e8f0;
       }
       .p-datatable .p-datatable-tbody > tr > td { 
-        padding: 1rem 1.5rem; color: #334155; border-bottom: 1px solid #f1f5f9; 
+        padding: 1.2rem 1.5rem; color: #334155; border-bottom: 1px solid #f1f5f9; transition: background-color 0.2s;
       }
+      .p-datatable .p-datatable-tbody > tr:hover > td { background-color: #f8fafc; }
       
       .img-curso {
         width: 40px; height: 40px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: block;
       }
       .img-placeholder {
         width: 40px; height: 40px; background-color: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #94a3b8;
+      }
+    }
+
+    /* ========================================= */
+    /* --- MOBILE CARD STYLES (< 768px) ---      */
+    /* ========================================= */
+    @media (max-width: 767px) {
+      border-radius: 12px;
+
+      ::ng-deep {
+        /* Cada fila como tarjeta */
+        .p-datatable .p-datatable-tbody > tr {
+          display: flex;
+          flex-direction: column;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 14px;
+          margin: 10px 12px;
+          padding: 0;
+          box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.08), 0 1px 3px -1px rgba(15, 23, 42, 0.04);
+          overflow: hidden;
+          transition: box-shadow 0.2s ease, transform 0.15s ease;
+
+          &:hover {
+            box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.12);
+          }
+
+          /* Quitar hover de fondo en mobile */
+          &:hover > td {
+            background-color: transparent !important;
+          }
+        }
+
+        /* Cada celda dentro de la tarjeta */
+        .p-datatable .p-datatable-tbody > tr > td {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px 16px !important;
+          border-bottom: 1px solid #f1f5f9 !important;
+          font-size: 0.88rem;
+
+          &:last-child {
+            border-bottom: none !important;
+          }
+        }
+
+        /* Labels de columna en mobile */
+        .p-datatable .p-datatable-tbody > tr > td > .p-column-title {
+          font-size: 0.72rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          color: #94a3b8;
+          min-width: 100px;
+          flex-shrink: 0;
+        }
+      }
+
+      /* --- Imagen curso: mejorada --- */
+      ::ng-deep .img-curso {
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 8px !important;
+        border: 2px solid #e0f2fe;
+        box-shadow: 0 2px 6px rgba(14, 165, 233, 0.15) !important;
+      }
+      ::ng-deep .img-placeholder {
+        width: 48px !important;
+        height: 48px !important;
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important;
+        border: 2px solid #bae6fd !important;
+        border-radius: 8px !important;
+        i { color: #0ea5e9 !important; font-size: 1.1rem; }
+      }
+
+      /* --- Badge periodo mejorado --- */
+      .badge-periodo {
+        background: linear-gradient(135deg, #e0f2fe, #f0f9ff) !important;
+        border: 1px solid #bae6fd;
+        color: #0369a1 !important;
+        padding: 4px 10px !important;
+        border-radius: 20px !important;
+        font-size: 0.8rem !important;
+        font-weight: 600;
+      }
+
+      /* --- Acciones: full width en su celda --- */
+      .col-acciones {
+        text-align: center !important;
+        justify-content: center !important;
+        padding: 12px 16px !important;
+        background: #fafbfc;
+
+        ::ng-deep .p-button {
+          justify-content: center;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 0.82rem;
+        }
       }
     }
   }
@@ -116,7 +218,7 @@
      4. DISEÑO DEL MODAL DE HORARIOS
      ========================================= */
   .box-crear-horario {
-    background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 20px; margin-bottom: 25px;
+    background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.02);
   
     .box-header {
       font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
@@ -151,12 +253,12 @@
   
   ::ng-deep {
     .tabla-interna-card {
-      background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 6px !important; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05) !important;
+      background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05) !important;
   
       .p-datatable-thead > tr > th {
-        background-color: #f1f5f9 !important; color: #64748b !important; font-weight: 700 !important; font-size: 0.75rem !important; padding: 0.8rem !important; border-bottom: 1px solid #e2e8f0 !important; white-space: nowrap;
+        background-color: #f1f5f9 !important; color: #64748b !important; font-weight: 700 !important; font-size: 0.75rem !important; padding: 1rem !important; border-bottom: 1px solid #e2e8f0 !important; white-space: nowrap;
       }
-      .p-datatable-tbody > tr > td { padding: 0.6rem 0.8rem !important; border-bottom: 1px solid #f1f5f9 !important; }
+      .p-datatable-tbody > tr > td { padding: 1rem !important; border-bottom: 1px solid #f1f5f9 !important; }
     }
     .tag-vacantes .p-tag { padding: 0.2rem 0.8rem; font-size: 0.85rem; font-weight: 700; }
     .p-inputnumber.w-full { width: 100%; .p-inputnumber-input { width: 100%; flex: 1 1 auto; } }

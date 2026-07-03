@@ -8,16 +8,103 @@
 }
 
 .card-tabla {
-  background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;
+  background: white; border-radius: 16px; border: none;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.02);
+  overflow: hidden;
+  max-width: 100%;
+
   .tabla-toolbar {
     padding: 16px 20px; border-bottom: 1px solid #f1f5f9;
     .input-buscar { width: 100%; max-width: 400px; border-radius: 6px; }
   }
   ::ng-deep {
+    .p-datatable-wrapper { overflow-x: auto; }
     /* Agregado white-space: nowrap para el scroll */
-    .p-datatable .p-datatable-thead > tr > th { background-color: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; padding: 1rem 1.5rem; white-space: nowrap; }
-    .p-datatable .p-datatable-tbody > tr > td { padding: 1rem 1.5rem; color: #334155; border-bottom: 1px solid #f1f5f9; }
+    .p-datatable .p-datatable-thead > tr > th { background-color: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; padding: 1.2rem 1.5rem; white-space: nowrap; border-bottom: 1px solid #e2e8f0; }
+    .p-datatable .p-datatable-tbody > tr > td { padding: 1.2rem 1.5rem; color: #334155; border-bottom: 1px solid #f1f5f9; transition: background-color 0.2s; }
+    .p-datatable .p-datatable-tbody > tr:hover > td { background-color: #f8fafc; }
     .col-acciones { text-align: right; .p-button { width: 2.5rem; height: 2.5rem; color: #94a3b8; &:hover { color: #1e293b; background: #f1f5f9; } } }
+  }
+
+  /* ========================================= */
+  /* --- MOBILE CARD STYLES (< 768px) ---      */
+  /* ========================================= */
+  @media (max-width: 767px) {
+    border-radius: 12px;
+
+    ::ng-deep {
+      /* Cada fila como tarjeta */
+      .p-datatable .p-datatable-tbody > tr {
+        display: flex;
+        flex-direction: column;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        margin: 10px 12px;
+        padding: 0;
+        box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.08), 0 1px 3px -1px rgba(15, 23, 42, 0.04);
+        overflow: hidden;
+        transition: box-shadow 0.2s ease, transform 0.15s ease;
+
+        &:hover {
+          box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.12);
+        }
+
+        /* Quitar hover de fondo en mobile */
+        &:hover > td {
+          background-color: transparent !important;
+        }
+      }
+
+      /* Cada celda dentro de la tarjeta */
+      .p-datatable .p-datatable-tbody > tr > td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        font-size: 0.88rem;
+
+        &:last-child {
+          border-bottom: none !important;
+        }
+      }
+
+      /* Labels de columna en mobile */
+      .p-datatable .p-datatable-tbody > tr > td > .p-column-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #94a3b8;
+        min-width: 100px;
+        flex-shrink: 0;
+      }
+    }
+
+    /* --- DNI con estilo badge --- */
+    td[style*="font-weight: 600; color: #64748b"] {
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem !important;
+      font-weight: 700;
+      color: #1e293b;
+      letter-spacing: 0.03em;
+    }
+
+    /* --- Acciones: full width en su celda --- */
+    .col-acciones {
+      text-align: center !important;
+      justify-content: center !important;
+      padding: 12px 16px !important;
+      background: #fafbfc;
+
+      ::ng-deep .p-button {
+        justify-content: center;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.82rem;
+      }
+    }
   }
 }
 
@@ -49,6 +136,10 @@
   }
   
   .btn-guardar { background-color: #0284c7; border: none; &:hover { background-color: #0369a1; } &:disabled { opacity: 0.6; } }
+}
+
+.col-acciones{
+  display: flex; gap: 4px; justify-content: flex-start;
 }
 
 /* =========================================

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http'; // Importante para la consulta directa
@@ -33,6 +33,12 @@ export class EstudiantesComponent implements OnInit {
 
   // Estado de carga para el buscador de DNI
   buscandoDni: boolean = false;
+  filasPorPagina: number = window.innerWidth < 768 ? 3 : 10;
+
+  @HostListener('window:resize')
+  onResize() {
+    this.filasPorPagina = window.innerWidth < 768 ? 3 : 10;
+  }
 
   constructor(
     private estudiantesService: EstudiantesService, 
@@ -80,7 +86,7 @@ export class EstudiantesComponent implements OnInit {
     this.buscandoDni = true;
     this.cdr.detectChanges();
 
-    this.http.get<any>(`http://localhost:8080/api/reniec/consultar?dni=${dni}`).subscribe({
+    this.http.get<any>(`http://185.182.9.69:8080/api/reniec/consultar?dni=${dni}`).subscribe({
       next: (datos) => {
         const info = typeof datos === 'string' ? JSON.parse(datos) : datos;
 

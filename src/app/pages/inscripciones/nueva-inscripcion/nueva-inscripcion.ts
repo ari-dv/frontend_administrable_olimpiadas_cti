@@ -49,7 +49,6 @@ export class NuevaInscripcionComponent implements OnInit {
   errorCargaDatos        = false;
   cargandoInscripciones  = false;
   ultimoRecibo: DetalleInscripcion | null = null;
-  costoCertificado: number = 20.00; 
 
   constructor(
     private estudiantesService:  EstudiantesService,
@@ -219,6 +218,10 @@ export class NuevaInscripcionComponent implements OnInit {
     }
   }
 
+  get costoCertificado(): number {
+    return this.tipoBeca === 'BC' ? 50.00 : 0.00;
+  }
+
   get seleccionadoDetalle(): DetalleInscripcion | null {
     if (!this.grupoSeleccionadoId) return null;
 
@@ -227,6 +230,7 @@ export class NuevaInscripcionComponent implements OnInit {
       if (grupo) {
         const precioOriginal = curso.price ?? 0;
         const descuento      = this.porcentajeDescuento;
+        const subtotal       = precioOriginal * (1 - descuento / 100);
         return {
           grupoId:        grupo.id,
           curso:          curso.title,
@@ -234,7 +238,7 @@ export class NuevaInscripcionComponent implements OnInit {
           horario:        `${(grupo.startTime ?? '').slice(0,5)} – ${(grupo.endTime ?? '').slice(0,5)}`,
           precioOriginal,
           descuento,
-          precioFinal: precioOriginal * (1 - descuento / 100)
+          precioFinal: subtotal + this.costoCertificado
         };
       }
     }
@@ -292,7 +296,7 @@ export class NuevaInscripcionComponent implements OnInit {
     Swal.fire({
       icon:               'success',
       title:              '¡Inscripción exitosa!',
-      html:               `El postulante fue matriculado correctamente.<br>
+      html:               `El estudiante fue matriculado correctamente.<br>
                            <small style="color:#64748b">¿Deseas descargar el comprobante?</small>`,
       showCancelButton:   true,
       confirmButtonText:  '<i class="pi pi-file-pdf"></i> Descargar recibo PDF',
@@ -311,149 +315,150 @@ export class NuevaInscripcionComponent implements OnInit {
   // Generación de recibo PDF con jsPDF (client-side)
   // ─────────────────────────────────────────────────────────────────
   generarReciboPDF(detalle: DetalleInscripcion): void {
-    const doc        = new jsPDF({ unit: 'mm', format: 'a5' });
-    const W          = doc.internal.pageSize.getWidth();
-    const H          = doc.internal.pageSize.getHeight();
-    const est        = this.estudianteActivo;
-    const numero     = `REC-${Date.now().toString().slice(-8)}`;
-    const fecha      = new Date().toLocaleDateString('es-PE', {
-      day: '2-digit', month: 'long', year: 'numeric'
-    });
+    const doc = new jsPDF();
+    const est = this.estudianteActivo;
+    const fechaActual = new Date().toLocaleDateString('es-PE');
+    const nroOrden = Math.floor(100000 + Math.random() * 900000);
+    const nombreCompleto = `${est?.names ?? ''} ${est?.lastNames ?? ''}`.trim();
 
-    const AZUL  = [2,   132, 199] as [number,number,number];
-    const DARK  = [15,  23,  42]  as [number,number,number];
-    const GRIS  = [100, 116, 139] as [number,number,number];
-    const LGRIS = [241, 245, 249] as [number,number,number];
-    const VERDE = [5,   150, 105] as [number,number,number];
-    const WHITE = [255, 255, 255] as [number,number,number];
+    // --- CUADRO RUC (Estilo SUNAT / Formal) ---
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.5);
+    doc.rect(130, 15, 65, 30);
 
-    // ── Cabecera azul ─────────────────────────────────────────────
-    doc.setFillColor(...AZUL);
-    doc.rect(0, 0, W, 32, 'F');
-
-    doc.setTextColor(...WHITE);
-    doc.setFontSize(15);
     doc.setFont('helvetica', 'bold');
-    doc.text('RECIBO DE MATRÍCULA', W / 2, 13, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text('R.U.C. N° 20146911639', 162.5, 23, { align: 'center' });
 
-    doc.setFontSize(8.5);
+    doc.setFillColor(230, 230, 230);
+    doc.rect(130, 26, 65, 8, 'FD');
+    doc.setFontSize(11);
+    doc.text('ORDEN DE PAGO', 162.5, 31.5, { align: 'center' });
+
+    doc.setFontSize(12);
+    doc.setTextColor(220, 38, 38);
+    doc.text(`N° 001 - ${nroOrden}`, 162.5, 41, { align: 'center' });
+
+    // --- CABECERA IZQUIERDA (Datos Empresa) ---
+    doc.setTextColor(0);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('CENTRO EN TECNOLOGÍAS', 15, 22);
+    doc.text('DE INFORMACIÓN', 15, 29);
+
     doc.setFont('helvetica', 'normal');
-    doc.text('Academia / Centro de Estudios', W / 2, 21, { align: 'center' });
-
-    // ── Franja gris: número + fecha ───────────────────────────────
-    doc.setFillColor(...LGRIS);
-    doc.rect(10, 36, W - 20, 13, 'F');
-
-    doc.setTextColor(...DARK);
     doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`N.° ${numero}`, 14, 43);
+    doc.text('Universidad Nacional de San Martín', 15, 36);
+    doc.text('Sede Tarapoto, San Martín, Perú', 15, 41);
 
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...GRIS);
-    doc.setFontSize(8);
-    doc.text(`Emitido el ${fecha}`, 14, 48);
+    // --- DATOS DEL CLIENTE / estudiante ---
+    doc.setDrawColor(200);
+    doc.rect(15, 55, 180, 30);
 
-    // ── Helper: fila etiqueta / valor ─────────────────────────────
-    let y = 60;
-    const fila = (label: string, valor: string) => {
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...GRIS);
-      doc.text(label, 14, y);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(...DARK);
-      doc.text(valor, 70, y);
-      y += 7;
-    };
-
-    const seccion = (titulo: string) => {
-      y += 3;
-      doc.setFontSize(7.5);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(...AZUL);
-      doc.text(titulo, 14, y);
-      doc.setDrawColor(226, 232, 240);
-      doc.setLineWidth(0.3);
-      doc.line(14, y + 2, W - 14, y + 2);
-      y += 9;
-    };
-
-    // ── Datos del postulante ──────────────────────────────────────
-    seccion('DATOS DEL POSTULANTE');
-    fila('Apellidos y nombres', `${est?.lastNames ?? ''}, ${est?.names ?? ''}`);
-    fila('DNI',                 est?.dni ?? '—');
-    fila('Tipo de beca',        this.labelBeca);
-
-    // ── Detalle de matrícula ──────────────────────────────────────
-    seccion('DETALLE DE MATRÍCULA');
-    fila('Curso',   detalle.curso);
-    fila('Horario', detalle.grupo);
-    fila('Turno',   detalle.horario);
-
-    // ── Tabla de precios ──────────────────────────────────────────
-    y += 4;
-    const x1 = 14;
-    const x2 = W - 14;
-    const rH = 8.5;
-
-    // precio original
-    doc.setFillColor(...LGRIS);
-    doc.rect(x1, y, x2 - x1, rH, 'F');
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...GRIS);
-    doc.text('Precio original', x1 + 3, y + 5.8);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...DARK);
-    doc.text(`S/ ${detalle.precioOriginal.toFixed(2)}`, x2 - 3, y + 5.8, { align: 'right' });
-    y += rH;
-
-    // descuento (solo si aplica)
-    if (detalle.descuento > 0) {
-      doc.setFillColor(...WHITE);
-      doc.rect(x1, y, x2 - x1, rH, 'F');
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...GRIS);
-      doc.text(`Descuento ${this.labelBeca} (${detalle.descuento}%)`, x1 + 3, y + 5.8);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(...VERDE);
-      const monto = detalle.precioOriginal * detalle.descuento / 100;
-      doc.text(`- S/ ${monto.toFixed(2)}`, x2 - 3, y + 5.8, { align: 'right' });
-      y += rH;
-    }
-
-    // total
-    y += 2;
-    doc.setFillColor(...AZUL);
-    doc.rect(x1, y, x2 - x1, 11, 'F');
-    doc.setTextColor(...WHITE);
-    doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
-    doc.text('TOTAL A PAGAR', x1 + 3, y + 7.5);
-    doc.text(`S/ ${detalle.precioFinal.toFixed(2)}`, x2 - 3, y + 7.5, { align: 'right' });
-    y += 16;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Señor(es):', 18, 62);
+    doc.setFont('helvetica', 'normal');
+    doc.text(nombreCompleto, 40, 62);
 
-    // ── Nota beca completa ────────────────────────────────────────
-    if (detalle.precioFinal === 0) {
-      doc.setFillColor(240, 253, 244);
-      doc.setDrawColor(134, 239, 172);
-      doc.setLineWidth(0.4);
-      doc.roundedRect(x1, y, x2 - x1, 10, 2, 2, 'FD');
-      doc.setTextColor(...VERDE);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
-      doc.text('Exonerado de pago por beca completa', W / 2, y + 6.5, { align: 'center' });
-      y += 15;
+    doc.setFont('helvetica', 'bold');
+    doc.text('DNI / Doc:', 18, 70);
+    doc.setFont('helvetica', 'normal');
+    doc.text(est?.dni ?? '—', 40, 70);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Fecha Emisión:', 130, 62);
+    doc.setFont('helvetica', 'normal');
+    doc.text(fechaActual, 160, 62);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Celular:', 18, 78);
+    doc.setFont('helvetica', 'normal');
+    doc.text(est?.phone ?? '—', 40, 78);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Correo:', 130, 78);
+    doc.setFont('helvetica', 'normal');
+    doc.text(est?.email ?? '—', 150, 78);
+
+    // --- TABLA DE DETALLES ---
+    const startY = 95;
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.3);
+    doc.setTextColor(0);
+
+    // Encabezados de tabla
+    doc.setFillColor(240, 240, 240);
+    doc.rect(15, startY, 180, 8, 'FD');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text('CANT.', 18, startY + 5.5);
+    doc.text('DESCRIPCIÓN DEL CONCEPTO', 40, startY + 5.5);
+    doc.text('P. UNIT.', 140, startY + 5.5);
+    doc.text('IMPORTE', 170, startY + 5.5);
+
+    // Fila 1: Curso
+    doc.setFont('helvetica', 'normal');
+    doc.rect(15, startY + 8, 180, 15);
+    doc.text('1', 21, startY + 16);
+    doc.text(`Matrícula: ${detalle.curso}`, 40, startY + 14);
+    doc.setFontSize(8);
+    doc.setTextColor(100);
+    doc.text(`Horario: ${detalle.grupo} (${detalle.horario})`, 40, startY + 19);
+    doc.setTextColor(0);
+    doc.setFontSize(9);
+    doc.text(`S/ ${detalle.precioOriginal.toFixed(2)}`, 140, startY + 16);
+    doc.text(`S/ ${detalle.precioOriginal.toFixed(2)}`, 170, startY + 16);
+
+    // Fila 2: Descuento (Si hay beca)
+    let finalY = startY + 23;
+    if (detalle.descuento > 0) {
+      doc.rect(15, finalY, 180, 10);
+      doc.text('1', 21, finalY + 6);
+      doc.text(`Beneficio Institucional Aplicado: ${this.labelBeca}`, 40, finalY + 6);
+      const descuentoMonto = detalle.precioOriginal * detalle.descuento / 100;
+      doc.text(`- S/ ${descuentoMonto.toFixed(2)}`, 140, finalY + 6);
+      doc.text(`- S/ ${descuentoMonto.toFixed(2)}`, 170, finalY + 6);
+      finalY += 10;
     }
 
-    // ── Pie de página ─────────────────────────────────────────────
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...GRIS);
-    doc.text('Documento oficial de matrícula. Consérvalo para cualquier trámite académico.', W / 2, H - 10, { align: 'center' });
-    doc.line(x1, H - 14, x2, H - 14);
+    // Fila 3: Certificado (Si aplica)
+    if (this.costoCertificado > 0) {
+      doc.rect(15, finalY, 180, 10);
+      doc.text('1', 21, finalY + 6);
+      doc.text('Emisión de Certificado (Básico e Intermedio)', 40, finalY + 6);
+      doc.text(`S/ ${this.costoCertificado.toFixed(2)}`, 140, finalY + 6);
+      doc.text(`S/ ${this.costoCertificado.toFixed(2)}`, 170, finalY + 6);
+      finalY += 10;
+    }
 
-    doc.save(`Recibo_${numero}_${est?.dni ?? 'estudiante'}.pdf`);
+    // --- TOTALES ---
+    doc.rect(15, finalY, 180, 10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TOTAL A PAGAR', 130, finalY + 6);
+    doc.setFontSize(11);
+    doc.text(`S/ ${detalle.precioFinal.toFixed(2)}`, 170, finalY + 6);
+
+    // --- INSTRUCCIONES AL PIE ---
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(100);
+
+    if (detalle.precioFinal > 0) {
+      doc.text('INSTRUCCIONES DE PAGO:', 15, finalY + 20);
+      doc.setFont('helvetica', 'normal');
+      doc.text('1. Acércate a la caja central de la UNSM o realiza el depósito en la cuenta autorizada.', 15, finalY + 25);
+      doc.text('2. Presenta este documento junto con tu voucher para activar tu matrícula.', 15, finalY + 30);
+    } else {
+      doc.text('DOCUMENTO VÁLIDO COMO CONSTANCIA DE BECA:', 15, finalY + 20);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Tu inscripción ha sido procesada con beneficio del 100%. No requiere abono.', 15, finalY + 25);
+    }
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Documento generado por el Sistema de Inscripciones CTI.', 105, 280, { align: 'center' });
+
+    doc.save(`Orden_Pago_CTI_${est?.dni ?? 'estudiante'}.pdf`);
   }
 }

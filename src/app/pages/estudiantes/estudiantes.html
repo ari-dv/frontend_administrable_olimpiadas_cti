@@ -14,7 +14,7 @@
     </p-iconField>
   </div>
 
-  <p-table #dtEstudiantes [value]="listaEstudiantes" [globalFilterFields]="['dni', 'names', 'lastNames', 'email']" [loading]="cargando" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '60rem' }" [responsiveLayout]="'scroll'">
+  <p-table #dtEstudiantes [value]="listaEstudiantes" [globalFilterFields]="['dni', 'names', 'lastNames', 'email']" [loading]="cargando" styleClass="p-datatable-sm" responsiveLayout="stack" breakpoint="768px" [paginator]="true" [rows]="filasPorPagina" [rowsPerPageOptions]="[3, 5, 10, 25]">
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 7rem">DNI</th>
@@ -28,13 +28,24 @@
     
     <ng-template pTemplate="body" let-estudiante>
       <tr>
-        <td style="font-weight: 600; color: #64748b;">{{ estudiante.dni }}</td>
-        <td style="font-weight: 500;">{{ estudiante.names }}, {{ estudiante.lastNames }}</td>
+        <td style="font-weight: 600; color: #64748b;">
+          <span class="p-column-title">DNI</span>
+          {{ estudiante.dni }}
+        </td>
+        <td style="font-weight: 500;">
+          <span class="p-column-title">Nombres y Apellidos</span>
+          {{ estudiante.names }}, {{ estudiante.lastNames }}
+        </td>
         <td style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="estudiante.email">
+          <span class="p-column-title">Correo Electrónico</span>
           {{ estudiante.email }}
         </td>
-        <td>{{ estudiante.phone || '-' }}</td>
         <td>
+          <span class="p-column-title">Teléfono</span>
+          {{ estudiante.phone || '-' }}
+        </td>
+        <td>
+          <span class="p-column-title">Estado</span>
           <p-tag 
             [value]="estudiante.isActive ? 'Activo' : 'Inactivo'" 
             [severity]="estudiante.isActive ? 'contrast' : 'secondary'"
@@ -42,6 +53,7 @@
           </p-tag>
         </td>
         <td class="col-acciones">
+          <span class="p-column-title">Acciones</span>
           <p-button icon="pi pi-pencil" [text]="true" severity="secondary" (onClick)="abrirModalEditar(estudiante)"></p-button>
           <p-button icon="pi pi-trash" [text]="true" severity="secondary" (onClick)="confirmarEliminar(estudiante.id)"></p-button>
         </td>
@@ -109,7 +121,7 @@
 
   <ng-template pTemplate="footer">
     <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="cerrarModal()"></p-button>
-    <p-button label="Guardar Alumno" (onClick)="guardarEstudiante()" styleClass="btn-guardar" [disabled]="estudianteForm.invalid"></p-button>
+    <p-button label="Guardar" (onClick)="guardarEstudiante()" styleClass="btn-guardar" [disabled]="estudianteForm.invalid"></p-button>
   </ng-template>
 
 </p-dialog>
