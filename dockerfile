@@ -15,8 +15,17 @@
     # Copiamos todo el dist temporalmente
     COPY --from=build /app/dist /tmp/dist
     
-    # TRUCO MÁGICO: Busca dónde está el index.html automáticamente y copia su contenido a Nginx
-    RUN cp -r $(dirname $(find /tmp/dist -name "index.html" | head -n 1))/* /usr/share/nginx/html/
+    # Copiamos el contenido de la carpeta 'browser' (JS, CSS, imágenes, fuentes) a Nginx
+    # Si no existe index.html pero sí index.csr.html (común en Angular SSR build), lo renombramos a index.html
+    RUN BROWSER_DIR=$(find /tmp/dist -type d -name "browser" | head -n 1) && \
+        if [ -n "$BROWSER_DIR" ] && [ -d "$BROWSER_DIR" ]; then \
+            cp -r $BROWSER_DIR/* /usr/share/nginx/html/; \
+            if [ ! -f /usr/share/nginx/html/index.html ] && [ -f /usr/share/nginx/html/index.csr.html ]; then \
+                cp /usr/share/nginx/html/index.csr.html /usr/share/nginx/html/index.html; \
+            fi \
+        else \
+            cp -r $(dirname $(find /tmp/dist -name "index.html" | head -n 1))/* /usr/share/nginx/html/; \
+        fi
     
     # Configuración de rutas
     RUN echo 'server { \
