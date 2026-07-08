@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class InscripcionesService {
-  private apiUrl = 'http://185.182.9.69:8080/api/inscripciones';
+  private apiUrl = 'http://185.182.9.69:8081/api/inscripciones';
 
   constructor(private http: HttpClient) { }
 
