@@ -86,7 +86,7 @@ export class EstudiantesComponent implements OnInit {
     this.buscandoDni = true;
     this.cdr.detectChanges();
 
-    this.http.get<any>(`http://api.185.182.9.69.nip.io/api/reniec/consultar?dni=${dni}`).subscribe({
+    this.http.get<any>(`http://185.182.9.69:8080/api/reniec/consultar?dni=${dni}`).subscribe({
       next: (datos) => {
         const info = typeof datos === 'string' ? JSON.parse(datos) : datos;
 
