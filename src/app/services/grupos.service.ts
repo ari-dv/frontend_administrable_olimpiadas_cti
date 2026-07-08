@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class GruposService {
-  private apiUrl = 'http://185.182.9.69:8080/api/grupos';
+  private apiUrl = 'http://api.185.182.9.69.nip.io/api/grupos';
 
   constructor(private http: HttpClient) { }
 

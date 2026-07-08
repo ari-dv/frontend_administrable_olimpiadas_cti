@@ -388,7 +388,7 @@ const doc = new Document({
         }),
         new Paragraph({
           shading: { type: ShadingType.SOLID, color: LGRIS },
-          children: [new TextRun({ text: '    C -->|"Petición HTTP (GET/POST/PUT/DELETE)"| D["🌐 API REST Spring Boot (185.182.9.69:8080)"]', size: 18, font: 'Consolas', color: DARK })],
+          children: [new TextRun({ text: '    C -->|"Petición HTTP (GET/POST/PUT/DELETE)"| D["🌐 API REST Spring Boot (api.185.182.9.69.nip.io)"]', size: 18, font: 'Consolas', color: DARK })],
         }),
         new Paragraph({
           shading: { type: ShadingType.SOLID, color: LGRIS },

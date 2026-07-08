@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CursosService {
-  private apiUrl = 'http://185.182.9.69:8080/api/cursos';
+  private apiUrl = 'http://api.185.182.9.69.nip.io/api/cursos';
 
   constructor(private http: HttpClient) { }
 
